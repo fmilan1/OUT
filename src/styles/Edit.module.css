@@ -1,0 +1,96 @@
+.container {
+    padding-left: 20px;
+    padding-top: 20px;
+}
+
+.container > h1 {
+    margin: 0;
+}
+
+.player {
+    display: flex;
+    gap: 20px;
+    --color: rgb(255, 49, 84);
+    cursor: pointer;
+    transition: .2s;
+    touch-action: none;
+}
+
+@media (pointer: fine) {
+    .player:not(:nth-last-child(1 of .player)):hover {
+        color: rgb(255, 49, 84);
+        text-decoration: line-through;
+    }
+}
+
+.player>span:first-child {
+    width: 28px;
+    text-align: right;
+    position: relative;
+}
+
+.player>span:first-child::before {
+    content: '#';
+    position: absolute;
+    left: 0;
+}
+
+.input {
+    box-sizing: border-box;
+    border: 0;
+    border-bottom: 2px solid;
+    font-size: 16px;
+    padding: 0;
+    outline: none;
+}
+
+h1>.input {
+    font-size: inherit;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.input::-webkit-outer-spin-button,
+.input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+.input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.player> :nth-child(1 of .input) {
+    width: 28px;
+    text-align: right;
+}
+
+.player> :nth-child(1 of .input)::placeholder {
+    text-align: left;
+}
+
+:nth-last-child(1 of .player)::before {
+    content: '#';
+    position: absolute;
+}
+
+.player:last-child:has(.wrong)::before {
+    color: var(--color);
+}
+
+.wrong {
+    border-bottom: 2px solid var(--color);
+    color: var(--color);
+}
+
+
+.buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.delete {
+    margin-top: 20px;
+    background-color: rgb(255, 49, 84);
+}

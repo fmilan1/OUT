@@ -1,0 +1,48 @@
+
+.container {
+    position: absolute;
+    height: 90%;
+    background-color: white;
+    border-radius: 15px;
+    box-sizing: border-box;
+    z-index: 5;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(90%, 500px);
+    overflow: scroll;   
+    padding: 20px;
+    box-shadow: 0px 1.5px 5px 1px grey;
+}
+
+.container::-webkit-scrollbar {
+    display: none;
+}
+
+th, td {
+    border: 2px solid;
+    box-sizing: border-box;
+    min-width: 70px;
+}
+
+.table {
+    margin: auto;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.close:hover {
+    rotate: 180deg;
+}
