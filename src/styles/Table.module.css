@@ -32,7 +32,7 @@ th {
     width: 35px;
 }
 
-.small:nth-child(even) {
+.bold {
     color: rgb(179, 179, 179);
     border-color: black;
 }

@@ -45,8 +45,8 @@ export default function Table(props: Props) {
                 {(props.scorers || props.opponentScorers) &&
                     order.map((o) => (
                         <tr>
-                            <td className={styles.small}>{order.filter(o1 => o1.isOurScore && o1.nth <= o.nth).length}</td>
-                            <td className={styles.small}>{order.filter(o1 => !o1.isOurScore && o1.nth <= o.nth).length}</td>
+                            <td className={`${styles.small} ${!o.isOurScore && styles.bold}`}>{order.filter(o1 => o1.isOurScore && o1.nth <= o.nth).length}</td>
+                            <td className={`${styles.small} ${o.isOurScore && styles.bold}`}>{order.filter(o1 => !o1.isOurScore && o1.nth <= o.nth).length}</td>
                             {o.isOurScore &&
                                 <>
                                     <td>{o.assist === o.goal ? 'C' : o.assist}</td>
