@@ -13,7 +13,7 @@ export default function Home() {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const storageTeams = JSON.parse(localStorage.getItem("teams") ?? '');
+        const storageTeams = JSON.parse(localStorage.getItem("teams") ?? '[]');
         setTeams(storageTeams);
 
         if (!scrollContainerRef.current) return;
