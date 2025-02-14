@@ -69,7 +69,7 @@ export default function Edit() {
                     <input
                         type='number'
                         onChange={(e) => setNewNumber(e.target.value.length > 2 ? newNumber : parseInt(e.target.value))}
-                        value={newNumber}
+                        value={newNumber < 0 ? '' : newNumber}
                         className={`${styles.input} ${team.players.map(p => p.number).includes(newNumber) ? styles.wrong : ''}`}
                     />
                     <input
@@ -82,11 +82,10 @@ export default function Edit() {
                         <button
                             className='button'
                             onClick={() => {
-                                setTeam(prev => {
-                                    return { ...prev, players: [...prev.players, { name: newName, number: newNumber }] }
-                                });
+                                setTeam({ ...team, players: [...team.players, { name: newName, number: newNumber }] });
                                 setNewNumber(-1);
                                 setNewName('');
+                                setDeletedPlayersStack([]);
                                 const firstInput = document.forms[0].elements[0] as HTMLInputElement;
                                 firstInput.focus();
                             }}
@@ -101,7 +100,7 @@ export default function Edit() {
                         <button
                             className={`${styles.saveButton} button`}
                             onClick={() => {
-                                let savedTeams: { name: string, id: string, players: { name: string, number: number }[] }[] = JSON.parse(localStorage.getItem('teams') ?? '');
+                                let savedTeams: {name: string, id: string, players: {name: string, number: number}[]}[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
                                 let filtered;
                                 if (!savedTeams) savedTeams = [team];
                                 else {
@@ -110,7 +109,7 @@ export default function Edit() {
                                 }
                                 localStorage.setItem('teams', JSON.stringify(savedTeams));
                                 setInitialStateTeam(team);
-                                setDeletedPlayersStack([])
+                                setDeletedPlayersStack([]);
                             }}
                         >
                             Mentés
