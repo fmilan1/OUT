@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import styles from '../styles/Edit.module.css'
 
@@ -7,27 +7,25 @@ export default function Edit() {
     const { state } = useLocation();
     const navigate = useNavigate();
     const [initialStateTeam, setInitialStateTeam] = useState(state.team);
-    const [newNumber, setNewNumber] = useState();
-    const [newName, setNewName] = useState();
+    const [newNumber, setNewNumber] = useState<number>(-1);
+    const [newName, setNewName] = useState<string>('');
 
-    const [team, setTeam] = useState(state.team);
+    const [team, setTeam] = useState<{ players: { name: string, number: number }[], name: string, id: string }>(state.team);
 
-    const [deletedPlayersStack, setDeletedPlayersStack] = useState([]);
+    const [deletedPlayersStack, setDeletedPlayersStack] = useState<{ name: string, number: number }[]>([]);
 
     return (
         <div
             className={styles.container}
         >
             <h1
-                contenteditable='true'
+                contentEditable={true}
             >
                 <input
                     className={styles.input}
                     type="text"
                     onChange={(e) => {
-                        setTeam(prev => {
-                            return { ...prev, name: e.target.value }
-                        });
+                        setTeam({ ...team, name: e.target.value });
                     }}
                     value={team.name}
                 />
@@ -36,7 +34,7 @@ export default function Edit() {
                 className={`${styles.delete} button`}
                 onClick={() => {
 
-                    let savedTeams = JSON.parse(localStorage.getItem('teams'));
+                    let savedTeams: { players: { name: string, number: number }[], name: string, id: string }[] = JSON.parse(localStorage.getItem('teams') ?? '');
                     let filtered;
                     if (!savedTeams) savedTeams = [team];
                     else {
@@ -57,12 +55,8 @@ export default function Edit() {
                     <div
                         className={styles.player}
                         onClick={() => {
-                            setTeam(prev => {
-                                return { ...prev, players: prev.players.filter(p1 => p1 !== p) }
-                            });
-                            setDeletedPlayersStack(prev => {
-                                return [...prev, p];
-                            });
+                            setTeam({ ...team, players: team.players.filter(p1 => p1 !== p) });
+                            setDeletedPlayersStack([...deletedPlayersStack, p]);
                         }}
                     >
                         <span>{p.number}</span>
@@ -74,9 +68,9 @@ export default function Edit() {
                 >
                     <input
                         type='number'
-                        onChange={(e) => setNewNumber(e.target.value.length > 2 ? newNumber : e.target.value)}
+                        onChange={(e) => setNewNumber(e.target.value.length > 2 ? newNumber : parseInt(e.target.value))}
                         value={newNumber}
-                        className={`${styles.input} ${team.players.map(p => p.number).includes(parseInt(newNumber)) ? styles.wrong : ''}`}
+                        className={`${styles.input} ${team.players.map(p => p.number).includes(newNumber) ? styles.wrong : ''}`}
                     />
                     <input
                         placeholder='Név'
@@ -84,14 +78,14 @@ export default function Edit() {
                         value={newName}
                         className={styles.input}
                     />
-                    {newNumber && newName && !team.players.map(p => p.number).includes(parseInt(newNumber)) &&
+                    {newNumber && newName && !team.players.map(p => p.number).includes(newNumber) &&
                         <button
                             className='button'
                             onClick={() => {
                                 setTeam(prev => {
-                                    return { ...prev, players: [...prev.players, { name: newName, number: parseInt(newNumber) }] }
+                                    return { ...prev, players: [...prev.players, { name: newName, number: newNumber }] }
                                 });
-                                setNewNumber('');
+                                setNewNumber(-1);
                                 setNewName('');
                                 const firstInput = document.forms[0].elements[0] as HTMLInputElement;
                                 firstInput.focus();
@@ -107,7 +101,7 @@ export default function Edit() {
                         <button
                             className={`${styles.saveButton} button`}
                             onClick={() => {
-                                let savedTeams = JSON.parse(localStorage.getItem('teams'));
+                                let savedTeams: { name: string, id: string, players: { name: string, number: number }[] }[] = JSON.parse(localStorage.getItem('teams') ?? '');
                                 let filtered;
                                 if (!savedTeams) savedTeams = [team];
                                 else {
@@ -128,6 +122,7 @@ export default function Edit() {
                             onClick={() => {
                                 setTeam(prev => {
                                     const last = deletedPlayersStack.pop();
+                                    if (!last) return prev;
                                     return { ...prev, players: [...prev.players, last] }
                                 });
                             }}

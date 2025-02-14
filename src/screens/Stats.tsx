@@ -6,11 +6,10 @@ import {
     useState,
     useEffect
 } from "react";
-import React from 'react';
 
 export default function Stats() {
 
-    const [players, setPlayers] = useState([]);
+    const [players, setPlayers] = useState<{ name: string, number: number }[]>([]);
 
     const { state } = useLocation();
 
@@ -18,19 +17,15 @@ export default function Stats() {
         setPlayers(state.players);
     });
 
-    const [scorers, setScorers] = useState([]);
-    const [opponentScorers, setOpponenScorers] = useState([]);
+    const [scorers, setScorers] = useState<{ assist: number, goal: number, nth: number, isOurScore: boolean }[]>([]);
+    const [opponentScorers, setOpponenScorers] = useState<{ assist: number, goal: number, nth: number, isOurScore: boolean }[]>([]);
 
-    function increaseScore(assister, scorer) {
-        setScorers(prev => {
-            return [...prev, { assist: assister, goal: scorer, nth: scorers.length + opponentScorers.length, isOurScore: true }];
-        })
+    function increaseScore(assister: number, scorer: number) {
+        setScorers([...scorers, { assist: assister, goal: scorer, nth: scorers.length + opponentScorers.length, isOurScore: true }])
     }
-    
-    function increaseOpponentScore(assister, scorer) {
-        setOpponenScorers(prev => {
-            return [...prev, { assist: assister, goal: scorer, nth: scorers.length + opponentScorers.length }];
-        })
+
+    function increaseOpponentScore() {
+        setOpponenScorers([...opponentScorers, { assist: -1, goal: -1, nth: scorers.length + opponentScorers.length, isOurScore: false }]);
     }
 
     const [showTable, setShowTable] = useState(false);
@@ -74,19 +69,11 @@ export default function Stats() {
 
                     <Records
                         onScored={increaseScore}
-                        onOpponentScored={!state.opponentName ? increaseOpponentScore : null}
+                        onOpponentScored={increaseOpponentScore}
                         header={state.teamName}
                         names={players.map(p => p.name)}
                         numbers={players.map(p => p.number)}
                     />
-                    {state.opponentName &&
-                        <Records
-                            onScored={increaseOpponentScore}
-                            header={state.opponentName}
-                            names={players.map(p => p.name)}
-                            numbers={players.map(p => p.number)}
-                        />
-                    }
                 </div>
             </div>
             {showTable &&

@@ -1,7 +1,7 @@
 import styles from '../styles/Home.module.css';
 import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router';
 import { uid } from 'uid';
 
@@ -9,20 +9,20 @@ export default function Home() {
 
     const navigate = useNavigate();
 
-    const [teams, setTeams] = useState([]);
+    const [teams, setTeams] = useState<{ name: string, id: string, players: { name: string, number: number }[] }[]>([]);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const storageTeams = JSON.parse(localStorage.getItem("teams"));
+        const storageTeams = JSON.parse(localStorage.getItem("teams") ?? '');
         setTeams(storageTeams);
 
         if (!scrollContainerRef.current) return;
-        
+
         scrollContainerRef.current.addEventListener('wheel', handleWheel, { passive: false });
     }, []);
 
-    
-    const handleWheel = (event) => {
+
+    const handleWheel = (event: WheelEvent) => {
         if (scrollContainerRef.current) {
             event.preventDefault(); // Megakadályozza a függőleges görgetést
             scrollContainerRef.current.scrollLeft += event.deltaY; // Görgetés vízszintes irányba
@@ -37,7 +37,6 @@ export default function Home() {
             <h1>Mentett csapatok</h1>
             <div
                 ref={scrollContainerRef}
-                // onWheel={handleWheel}
                 className={styles.teamsContainer}
             >
                 <div
@@ -50,18 +49,28 @@ export default function Home() {
                             }
                         })
                     }}
-                    >+</div>
+                >+</div>
                 {teams && teams.map((team) => (
                     <div
                         key={team.id}
                         className={styles.team}
                         onClick={() => {
+                            // alert();
                             navigate('/new', {
                                 state: { players: team.players.sort((a, b) => a.number - b.number), teamName: team.name }
                             });
                         }}
+                    >
+                        <div
+                            className={`${styles.icon} ${styles.people}`}
                         >
+                            <FontAwesomeIcon
+                                icon={faUser}
+                            />
+                            {team.players.length}
+                        </div>
                         <FontAwesomeIcon
+                            className={`${styles.icon} ${styles.edit}`}
                             icon={faPenToSquare}
                             onClick={(e) => {
                                 e.stopPropagation();

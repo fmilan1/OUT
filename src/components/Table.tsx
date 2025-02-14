@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '../styles/Table.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
-    scorers: [{ assist: {}, goal: {}, nth: number }],
-    opponentScorers: [{ assist: {}, goal: {}, nth: number }],
+    scorers: { assist: number, goal: number, nth: number, isOurScore: boolean }[],
+    opponentScorers: { assist: number, goal: number, nth: number, isOurScore: boolean }[],
     teamName: string,
     opponentName?: string,
     onToggle: () => void,
 }
 export default function Table(props: Props) {
 
-    const [order, setOrder] = useState([]);
+    const [order, setOrder] = useState<{ assist: number, goal: number, nth: number, isOurScore: boolean }[]>([]);
 
     useEffect(() => {
         let o = [...props.scorers, ...props.opponentScorers];
@@ -35,45 +35,28 @@ export default function Table(props: Props) {
                 className={styles.table}
             >
                 <tr>
-                    <th colspan='2'>{props.teamName}</th>
-                    {props.opponentName && <th colspan='2'>{props.opponentName}</th>}
+                    <th colSpan={4} >{props.teamName}</th>
                 </tr>
                 <tr>
-                    <th>Assist</th>
-                    <th>Goal</th>
-                    {props.opponentName &&
-                        <>
-                            <th>Assist</th>
-                            <th>Goal</th>
-                        </>
-                    }
+                    <th colSpan={2}>Állás</th>
+                    <th>Asszist</th>
+                    <th>Pont</th>
                 </tr>
                 {(props.scorers || props.opponentScorers) &&
-                    order.map((order, index) => (
-
+                    order.map((o) => (
                         <tr>
-                            {order.isOurScore &&
+                            <td className={styles.small}>{order.filter(o1 => o1.isOurScore && o1.nth <= o.nth).length}</td>
+                            <td className={styles.small}>{order.filter(o1 => !o1.isOurScore && o1.nth <= o.nth).length}</td>
+                            {o.isOurScore &&
                                 <>
-                                    <td>{order.assist === order.goal ? 'C' : order.assist}</td>
-                                    <td>{order.goal}</td>
-                                    {props.opponentName &&
-                                        <>
-                                            <td>-</td>
-                                            <td>-</td>
-                                        </>
-                                    }
+                                    <td>{o.assist === o.goal ? 'C' : o.assist}</td>
+                                    <td>{o.goal}</td>
                                 </>
                             }
-                            {!order.isOurScore &&
+                            {!o.isOurScore &&
                                 <>
                                     <td>-</td>
                                     <td>-</td>
-                                    {props.opponentName &&
-                                        <>
-                                            <td>{order.assist == order.goal ? 'C' : order.assist}</td>
-                                            <td>{order.goal}</td>
-                                        </>
-                                    }
                                 </>
                             }
                         </tr>

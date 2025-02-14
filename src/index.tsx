@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { BrowserRouter, Route, Routes } from "react-router";
@@ -7,7 +6,7 @@ import Stats from './screens/Stats';
 import New from './screens/New';
 import Edit from './screens/Edit';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
 	<BrowserRouter>
 		<Routes>

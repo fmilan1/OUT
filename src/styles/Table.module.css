@@ -22,7 +22,19 @@
 th, td {
     border: 2px solid;
     box-sizing: border-box;
-    min-width: 70px;
+}
+
+th {
+    width: 70px;
+}
+
+.small {
+    width: 35px;
+}
+
+.small:nth-child(even) {
+    color: rgb(179, 179, 179);
+    border-color: black;
 }
 
 .table {
