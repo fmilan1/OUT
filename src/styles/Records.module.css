@@ -67,13 +67,14 @@
     cursor: pointer;
 }
 
-.opponent:hover {
-    background-color: lightgray;
-}
 
 @media (pointer: fine) {
     .record:hover {
         background-color: aquamarine;
+    }
+
+    .opponent:hover {
+        background-color: lightgray;
     }
 }
 
