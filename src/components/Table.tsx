@@ -55,8 +55,7 @@ export default function Table(props: Props) {
                             }
                             {!o.isOurScore &&
                                 <>
-                                    <td>-</td>
-                                    <td>-</td>
+                                    <td colSpan={2}>-</td>
                                 </>
                             }
                         </tr>
