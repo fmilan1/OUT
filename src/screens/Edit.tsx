@@ -42,6 +42,9 @@ export default function Edit() {
                         savedTeams = [...filtered];
                     }
                     localStorage.setItem('teams', JSON.stringify(savedTeams));
+                    let savedStats: { modified: number, id: string, teamId: string, opponentName: string, scorers: {}[], opponentScorers: {}[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+                    savedStats = savedStats.filter(s => s.teamId !== team.id);
+                    localStorage.setItem('stats', JSON.stringify(savedStats));
                     navigate('/');
                 }}
             >
