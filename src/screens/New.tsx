@@ -57,7 +57,7 @@ export default function New() {
                         {savedStats.sort((a, b) => b.modified - a.modified).map(stat => (
                             <div
                                 className={styles.stat}
-                                onClick={(e) => {
+                                onClick={() => {
                                     navigate('/stats', { state: { ...state, opponentName: stat.opponentName, id: stat.id } });
                                 }}
                             >
