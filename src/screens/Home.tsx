@@ -55,9 +55,8 @@ export default function Home() {
                         key={team.id}
                         className={styles.team}
                         onClick={() => {
-                            // alert();
                             navigate('/new', {
-                                state: { players: team.players.sort((a, b) => a.number - b.number), teamName: team.name }
+                                state: { team }
                             });
                         }}
                     >
