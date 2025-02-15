@@ -10,8 +10,7 @@ export default function New() {
     const { state } = useLocation();
     const navigate = useNavigate();
 
-    // const [players, _] = useState<{ name: string, number: number }[]>(state.team.players);
-    const [team, setTeam] = useState<{ id: string, name: string, players: { name: string, number: number }[] }>(state.team);
+    const [team, _] = useState<{ id: string, name: string, players: { name: string, number: number }[] }>(state.team);
 
     const [opponentName, setOpponentName] = useState<string>('');
 
@@ -75,7 +74,7 @@ export default function New() {
                                     icon={faTrash}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        let stats = JSON.parse(localStorage.getItem('stats') ?? '[]');
+                                        let stats: { modified: number, id: string, teamId: string, opponentName: string, scorers: {}[], opponentScorers: {}[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
                                         stats = stats.filter(s => s.id !== stat.id);
                                         localStorage.setItem('stats', JSON.stringify(stats));
                                         setSavedStats(stats);
