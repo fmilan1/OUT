@@ -64,6 +64,11 @@
     color: white;
     display: grid;
     place-items: center;
+    cursor: pointer;
+}
+
+.opponent:hover {
+    background-color: lightgray;
 }
 
 @media (pointer: fine) {
