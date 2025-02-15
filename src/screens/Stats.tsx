@@ -93,7 +93,7 @@ export default function Stats() {
                     <Records
                         onScored={increaseScore}
                         onOpponentScored={increaseOpponentScore}
-                        header={state.teamName}
+                        header={state.team.name}
                         names={players.map(p => p.name)}
                         numbers={players.map(p => p.number)}
                     />
@@ -107,7 +107,6 @@ export default function Stats() {
                     scorers={scorers}
                     opponentScorers={opponentScorers}
                 />
-                // <></>
             }
         </>
     );
