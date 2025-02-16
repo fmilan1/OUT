@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
 import styles from '../styles/Table.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
-    scorers: { assist: number, goal: number, nth: number, isOurScore: boolean }[],
+    scorers: { assist: number, goal: number, isOurScore: boolean }[],
     teamName: string,
     opponentName?: string,
     onToggle: () => void,

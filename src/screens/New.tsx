@@ -14,10 +14,10 @@ export default function New() {
 
     const [opponentName, setOpponentName] = useState<string>('');
 
-    const [savedStats, setSavedStats] = useState<{ modified: number, id: string, teamId: string, opponentName: string, scorers: {}[] }[]>([]);
+    const [savedStats, setSavedStats] = useState<{ modified: number, id: string, teamId: string, opponentName: string, scorers: {}[], isOurScore: boolean }[]>([]);
 
     useEffect(() => {
-        const storageStats: { modified: number, id: string, teamId: string, opponentName: string, scorers: {}[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+        const storageStats: { modified: number, id: string, teamId: string, opponentName: string, scorers: {}[], isOurScore: boolean }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         const filtered = storageStats.filter(s => s.teamId === team.id);
         setSavedStats(filtered);
     }, []);

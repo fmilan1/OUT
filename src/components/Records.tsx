@@ -5,8 +5,7 @@ interface Props {
     names: string[],
     numbers: number[],
     header: string,
-    onScored: (assister: number, scorer: number) => void,
-    onOpponentScored: () => void,
+    onScored: (assister: number, scorer: number, isOurScore: boolean) => void,
 }
 
 export default function Records(props: Props) {
