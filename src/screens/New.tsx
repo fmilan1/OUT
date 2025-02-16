@@ -26,7 +26,6 @@ export default function New() {
         <div
             className={styles.container}
         >
-	    <h1>{team.id}</h1>
             <h1>{team.name}</h1>
             <h2>Játékosok</h2>
             {team.players.map(player => (
@@ -78,9 +77,7 @@ export default function New() {
                                         let stats: { modified: number, id: string, teamId: string, opponentName: string, scorers: {}[], opponentScorers: {}[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
                                         stats = stats.filter(s => s.id !== stat.id);
                                         localStorage.setItem('stats', JSON.stringify(stats));
-					console.log("before", stats);
 					stats = stats.filter(s => s.teamId === team.id);
-					console.log("after", stats);
                                         setSavedStats(stats);
                                     }}
                                 />
