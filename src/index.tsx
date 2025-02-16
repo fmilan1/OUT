@@ -6,15 +6,14 @@ import Stats from './screens/Stats';
 import New from './screens/New';
 import Edit from './screens/Edit';
 
-import concertOneModified from './assets/fonts/ConcertOneModified.ttf?url';
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
     <>
 	<style>
 	    {`
 		@font-face {
-		    font-family: "Concert One";
-		    src: url(${concertOneModified}) format("truetype");
+		    font-family: 'Concert One';
+		    src: url('/fonts/ConcertOneModified.ttf') format("truetype");
 		}
 	    `}
 	</style>
