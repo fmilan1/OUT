@@ -14,10 +14,10 @@ export default function New() {
 
     const [opponentName, setOpponentName] = useState<string>('');
 
-    const [savedStats, setSavedStats] = useState<{ modified: number, id: string, teamId: string, opponentName: string, scorers: {}[], isOurScore: boolean }[]>([]);
+    const [savedStats, setSavedStats] = useState<{ modified: number, id: string, teamId: string, opponentName: string, scorers: { name: string, number: number, isOurScore: boolean }[] }[]>([]);
 
     useEffect(() => {
-        const storageStats: { modified: number, id: string, teamId: string, opponentName: string, scorers: {}[], isOurScore: boolean }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+        const storageStats: { modified: number, id: string, teamId: string, opponentName: string, scorers: { name: string, number: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         const filtered = storageStats.filter(s => s.teamId === team.id);
         setSavedStats(filtered);
     }, []);
@@ -74,7 +74,7 @@ export default function New() {
                                     icon={faTrash}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        let stats: { modified: number, id: string, teamId: string, opponentName: string, scorers: {}[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+                                        let stats: { modified: number, id: string, teamId: string, opponentName: string, scorers: { name: string, number: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
                                         stats = stats.filter(s => s.id !== stat.id);
                                         localStorage.setItem('stats', JSON.stringify(stats));
 					stats = stats.filter(s => s.teamId === team.id);
