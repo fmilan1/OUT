@@ -43,6 +43,10 @@
     .continueButton:hover {
         scale: 1.1;
     }
+
+    .score:hover {
+	scale: 1.1;
+    }
 }
 
 .score {
@@ -57,6 +61,3 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-.score:hover {
-    scale: 1.1;
-}
