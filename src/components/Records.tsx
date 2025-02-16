@@ -53,7 +53,7 @@ export default function Records(props: Props) {
                 onClick={() => {
                     setAssister(-1);
                     setScorer(-1);
-                    props.onScored(assister, scorer);
+                    props.onScored(assister, scorer, true);
                 }}
             >
                 ✓
@@ -80,14 +80,12 @@ export default function Records(props: Props) {
                         record(name, props.numbers[index])
                     ))}
                 </div>
-                {props.onOpponentScored &&
                     <div
                         className={styles.opponent}
-                        onClick={() => props.onOpponentScored()}
+                        onClick={() => props.onScored(assister, scorer, false)}
                     >
                         Ellenfél szerzett pontot :(
                     </div>
-                }
                 {assister !== -1 && scorer !== -1 && contineuButton()}
             </div>
         </>

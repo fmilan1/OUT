@@ -5,20 +5,12 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
     scorers: { assist: number, goal: number, nth: number, isOurScore: boolean }[],
-    opponentScorers: { assist: number, goal: number, nth: number, isOurScore: boolean }[],
     teamName: string,
     opponentName?: string,
     onToggle: () => void,
+    onDeleteLast: () => void,
 }
 export default function Table(props: Props) {
-
-    const [order, setOrder] = useState<{ assist: number, goal: number, nth: number, isOurScore: boolean }[]>([]);
-
-    useEffect(() => {
-        let o = [...props.scorers, ...props.opponentScorers];
-        o.sort((a, b) => a.nth - b.nth);
-        setOrder(o);
-    });
 
     return (
         <div
@@ -42,25 +34,34 @@ export default function Table(props: Props) {
                     <th>Asszist</th>
                     <th>Pont</th>
                 </tr>
-                {(props.scorers || props.opponentScorers) &&
-                    order.map((o) => (
+                {(props.scorers) &&
+                    props.scorers.map((s, index) => (
                         <tr>
-                            <td className={`${styles.small} ${!o.isOurScore && styles.bold}`}>{order.filter(o1 => o1.isOurScore && o1.nth <= o.nth).length}</td>
-                            <td className={`${styles.small} ${o.isOurScore && styles.bold}`}>{order.filter(o1 => !o1.isOurScore && o1.nth <= o.nth).length}</td>
-                            {o.isOurScore &&
+                            <td className={`${styles.small} ${!s.isOurScore && styles.bold}`}>{props.scorers.filter((s1, index1) => s1.isOurScore && index >= index1).length}</td>
+                            <td className={`${styles.small} ${s.isOurScore && styles.bold}`}>{props.scorers.filter((s1, index1) => !s1.isOurScore && index >= index1).length}</td>
+                            {s.isOurScore &&
                                 <>
-                                    <td>{o.assist === o.goal ? 'C' : o.assist}</td>
-                                    <td>{o.goal}</td>
+                                    <td>{s.assist === s.goal ? 'C' : s.assist}</td>
+                                    <td>{s.goal}</td>
                                 </>
                             }
-                            {!o.isOurScore &&
-                                <>
-                                    <td colSpan={2}>-</td>
-                                </>
+                            {!s.isOurScore &&
+				<td colSpan={2}>-</td>
                             }
                         </tr>
                     ))
                 }
+		{props.scorers.length > 0 &&
+		    <tr>
+			<td
+			    className={styles.delete}
+			    colSpan={4}
+			    onClick={props.onDeleteLast}
+			>
+			    Visszavonás
+			</td>
+		    </tr>
+		}
             </table>
         </div>
     )

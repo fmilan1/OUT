@@ -12,41 +12,36 @@ export default function Stats() {
     const [players, setPlayers] = useState<{ name: string, number: number }[]>([]);
 
     const { state } = useLocation();
-    const [scorers, setScorers] = useState<{ assist: number, goal: number, nth: number, isOurScore: boolean }[]>([]);
-    const [opponentScorers, setOpponenScorers] = useState<{ assist: number, goal: number, nth: number, isOurScore: boolean }[]>([]);
+    const [scorers, setScorers] = useState<{ assist: number, goal: number, isOurScore: boolean }[]>([]);
 
     useEffect(() => {
         setPlayers(state.team.players);
     });
     
     useEffect(() => {
-        if (scorers.length + opponentScorers.length === 0) return;
+        if (scorers.length === 0) return;
         saveStat();
-    }, [scorers, opponentScorers])
+    }, [scorers])
 
     useEffect(() => {
-        const storageStats: { modified: number, teamId: string, id: string, scorers: { assist: number, goal: number, nth: number, isOurScore: boolean }[], opponentScorers: { assist: number, goal: number, nth: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+        const storageStats: { modified: number, teamId: string, id: string, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         let thisStorageStat = storageStats.find(s => s.id === state.id);
         setScorers(thisStorageStat?.scorers ?? []);
-        setOpponenScorers(thisStorageStat?.opponentScorers ?? []);
 
     }, []);
 
-    function increaseScore(assister: number, scorer: number) {
-        setScorers([...scorers, { assist: assister, goal: scorer, nth: scorers.length + opponentScorers.length, isOurScore: true }])
+    function increaseScore(assister: number, scorer: number, isOurScore: boolean) {
+	console.log(scorers);
+        setScorers([...scorers, { assist: assister, goal: scorer, isOurScore }])
     }
     
-    function increaseOpponentScore() {
-        setOpponenScorers([...opponentScorers, { assist: -1, goal: -1, nth: scorers.length + opponentScorers.length, isOurScore: false }]);
-    }
-
     function saveStat() {
-        let savedStats: { modified: number, teamId: string, id: string, opponentName: string, scorers: { assist: number, goal: number, nth: number, isOurScore: boolean }[], opponentScorers: { assist: number, goal: number, nth: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+        let savedStats: { modified: number, teamId: string, id: string, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         let filtered;
-        if (!savedStats) savedStats = [{ modified: Date.now(), opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers, opponentScorers }];
+        if (!savedStats) savedStats = [{ modified: Date.now(), opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers }];
         else {
             filtered = savedStats.filter(s => s.id !== state.id);
-            savedStats = [...filtered, { modified: Date.now(), opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers, opponentScorers }]
+            savedStats = [...filtered, { modified: Date.now(), opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers }]
         }
         localStorage.setItem('stats', JSON.stringify(savedStats));
     }
@@ -62,6 +57,10 @@ export default function Stats() {
         else document.exitFullscreen();
     }
 
+    function deleteLast() {
+	setScorers(prev => prev.slice(0, -1));
+    }
+
     return (
         <>
             <div
@@ -75,9 +74,9 @@ export default function Stats() {
                     className={styles.score}
                     onClick={toggleTable}
                 >
-                    {scorers.length}
+                    {scorers.filter(s => s.isOurScore).length}
                     <span>-</span>
-                    {opponentScorers.length}
+                    {scorers.filter(s => !s.isOurScore).length}
                 </div>
 
 
@@ -92,7 +91,6 @@ export default function Stats() {
 
                     <Records
                         onScored={increaseScore}
-                        onOpponentScored={increaseOpponentScore}
                         header={state.team.name}
                         names={players.map(p => p.name)}
                         numbers={players.map(p => p.number)}
@@ -105,7 +103,7 @@ export default function Stats() {
                     teamName={state.team.name}
                     opponentName={state.opponentName}
                     scorers={scorers}
-                    opponentScorers={opponentScorers}
+		    onDeleteLast={deleteLast}
                 />
             }
         </>

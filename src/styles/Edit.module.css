@@ -13,7 +13,7 @@
     --color: rgb(255, 49, 84);
     cursor: pointer;
     transition: .2s;
-    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 @media (pointer: fine) {
