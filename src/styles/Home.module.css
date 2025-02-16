@@ -84,13 +84,6 @@
     .team:hover .icon {
         opacity: 1;
     }
-
-    .team:hover > span {
-        /* background-color: red; */
-        height: 40px;
-        font-size: 30px;
-        /* background-color: rgba(0, 0, 0, 0.3); */
-    }
 }
 
 

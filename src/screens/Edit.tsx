@@ -81,7 +81,7 @@ export default function Edit() {
                         value={newName}
                         className={styles.input}
                     />
-                    {newNumber && newName && !team.players.map(p => p.number).includes(newNumber) &&
+                    {newNumber >= 0 && newName !== '' && !team.players.map(p => p.number).includes(newNumber) && 
                         <button
                             className='button'
                             onClick={() => {
