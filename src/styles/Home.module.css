@@ -89,6 +89,7 @@
 
 .team>img {
     aspect-ratio: 1;
+    margin: 25px;
 }
 
 .team:first-child {
