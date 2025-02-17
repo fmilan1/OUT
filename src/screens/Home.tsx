@@ -76,7 +76,7 @@ export default function Home() {
                                 navigate('/edit', { state: { team } })
                             }}
                         />
-                        <img src="/public/out.svg" alt="Csapatlogó" />
+                        <img src="out.svg" alt="Csapatlogó" />
                         <span>{team.name}</span>
                     </div>
                 ))}
