@@ -19,16 +19,15 @@ export default function Stats() {
     });
     
     useEffect(() => {
-        if (scorers.length === 0) return;
-        saveStat();
-    }, [scorers])
-
-    useEffect(() => {
         const storageStats: { modified: number, teamId: string, id: string, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         let thisStorageStat = storageStats.find(s => s.id === state.id);
         setScorers(thisStorageStat?.scorers ?? []);
 
     }, []);
+
+    useEffect(() => {
+        saveStat();
+    }, [scorers])
 
     function increaseScore(assister: number, scorer: number, isOurScore: boolean) {
 	console.log(scorers);
