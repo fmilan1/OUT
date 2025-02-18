@@ -5,7 +5,6 @@
     scroll-snap-stop: always;
     border-radius: 10px;
     box-shadow: 0px 1.5px 5px 1px grey;
-    -webkit-tap-highlight-color: transparent;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -36,6 +35,15 @@
     min-height: 50px;
     display: grid;
     place-items: center;
+    grid-template-columns: 1fr .4fr 1fr;
+}
+
+.header>:nth-child(1) {
+    justify-self: end;
+}
+
+.header>:nth-child(3) {
+    justify-self: start;
 }
 
 .record {
@@ -74,7 +82,7 @@
     }
 
     .opponent:hover {
-        background-color: lightgray;
+        background-color: var(--hoverColor);
     }
 }
 
@@ -108,7 +116,6 @@
     background-color: rgb(100, 100, 255);
     box-shadow: 0px 1.5px 5px 1px grey;
     cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
     transition: .1s;
     z-index: 100;
     font-size: 15px;

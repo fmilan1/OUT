@@ -4,7 +4,8 @@ import { useState } from "react";
 interface Props {
     names: string[],
     numbers: number[],
-    header: string,
+    teamName: string,
+    opponentName: string,
     onScored: (assister: number, scorer: number, isOurScore: boolean) => void,
 }
 
@@ -13,9 +14,10 @@ export default function Records(props: Props) {
     const [assister, setAssister] = useState<number>(-1);
     const [scorer, setScorer] = useState<number>(-1);
 
-    const record = (name: string, number: number) => {
+    const record = (name: string, number: number, key: string) => {
         return (
             <div
+		key={key}
                 className={`${styles.record} ${number === assister || number === scorer ? styles.selected : ''}`}
                 onClick={() => {
                     if (assister === -1) setAssister(number);
@@ -68,15 +70,15 @@ export default function Records(props: Props) {
                 <div
                     className={styles.header}
                 >
-                    <div>
-                        {props.header}
-                    </div>
+		    <span>{props.teamName}</span>
+		    <span>vs</span>
+		    <span>{props.opponentName}</span>
                 </div>
                 <div
                     className={styles.recordContainer}
                 >
                     {props.names.map((name, index) => (
-                        record(name, props.numbers[index])
+                        record(name, props.numbers[index], index.toString())
                     ))}
                 </div>
                     <div

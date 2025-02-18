@@ -10,7 +10,7 @@ export default function New() {
     const { state } = useLocation();
     const navigate = useNavigate();
 
-    const [team, _] = useState<{ id: string, name: string, players: { name: string, number: number }[] }>(state.team);
+    const [team, _] = useState<{ id: string, name: string, players: {name: string, number: number}[] }>(state.team);
 
     const [opponentName, setOpponentName] = useState<string>('');
 
@@ -28,18 +28,18 @@ export default function New() {
         >
             <h1>{team.name}</h1>
             <h2>Játékosok</h2>
-            {team.players.map(player => (
+            {team.players.sort((a, b) => a.number - b.number).map((player, index)=> (
                 <div
-                    className={styles.player}
+		    key={index}
+                    className={`${styles.player} player`}
                 >
-                    <span>{player.number}</span>
-                    <span>{player.name}</span>
+		    <span>{player.number}</span>
+		    <span>{player.name}</span>
                 </div>
             ))}
             <h2>Ellenfél</h2>
             <input type="text" placeholder='Csapatnév' onChange={(e) => setOpponentName(e.target.value)} />
-            <br />
-            <br />
+	    <br />
             <button
                 className='button'
                 onClick={() => {
@@ -54,8 +54,9 @@ export default function New() {
                     <div
                         className={styles.savedStatsContainer}
                     >
-                        {savedStats.sort((a, b) => b.modified - a.modified).map(stat => (
+                        {savedStats.sort((a, b) => b.modified - a.modified).map((stat, index)=> (
                             <div
+				key={index}
                                 className={styles.stat}
                                 onClick={() => {
                                     navigate('/stats', { state: { ...state, opponentName: stat.opponentName, id: stat.id } });

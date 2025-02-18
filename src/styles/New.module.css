@@ -1,38 +1,10 @@
 .container {
-    box-sizing: border-box;
-    padding-left: 20px;
-    padding-top: 20px;
-}
-
-.container>h1 {
-    margin: 0;
+    padding: 20px;
+    padding-top: 0;
 }
 
 .container>h2:not(.h2) {
     margin-bottom: 10px;
-}
-
-.player {
-    display: flex;
-    gap: 20px;
-    position: relative;
-}
-
-.player>span:first-child::before {
-    content: '#';
-    position: absolute;
-    left: 0;
-}
-
-.player>span:first-child {
-    text-align: right;
-    width: 28px;
-}
-
-.opponentCheckboxContainer {
-    display: flex;
-    align-items: center;
-    width: max-content;
 }
 
 .h2 {

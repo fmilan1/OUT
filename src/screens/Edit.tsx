@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import styles from '../styles/Edit.module.css'
 
@@ -6,21 +6,26 @@ export default function Edit() {
 
     const { state } = useLocation();
     const navigate = useNavigate();
-    const [initialStateTeam, setInitialStateTeam] = useState(state.team);
-    const [newNumber, setNewNumber] = useState<number>(-1);
-    const [newName, setNewName] = useState<string>('');
+    const [players, _] = useState<{name: string, number: number}[]>(state.players);
 
-    const [team, setTeam] = useState<{ players: { name: string, number: number }[], name: string, id: string }>(state.team);
+    const [team, setTeam] = useState<{ players: {name: string, number: number}[], name: string, id: string }>(state.team);
+    const [changed, setChanged] = useState(false);
 
-    const [deletedPlayersStack, setDeletedPlayersStack] = useState<{ name: string, number: number }[]>([]);
+    useEffect(() => {
+	let storageTeams: {name: string, id: string, players: {name: string, number: number}[] }[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
+	let thisTeam = storageTeams.find(p => p.id === state.team.id);
+	if (thisTeam) setTeam(thisTeam);
+    }, []);
+
+    useEffect(() => {
+	setChanged(true);
+    }, [team]);
 
     return (
         <div
             className={styles.container}
         >
-            <h1
-                contentEditable={true}
-            >
+            <h1>
                 <input
                     className={styles.input}
                     type="text"
@@ -34,7 +39,7 @@ export default function Edit() {
                 className={`${styles.delete} button`}
                 onClick={() => {
 
-                    let savedTeams: { players: { name: string, number: number }[], name: string, id: string }[] = JSON.parse(localStorage.getItem('teams') ?? '');
+                    let savedTeams: { players: {name: string, number: number}[], name: string, id: string }[] = JSON.parse(localStorage.getItem('teams') ?? '');
                     let filtered;
                     if (!savedTeams) savedTeams = [team];
                     else {
@@ -51,89 +56,36 @@ export default function Edit() {
                 Csapat törlése
             </button>
             <h2>Játékosok</h2>
-            <div
-                className={styles.players}
-            >
-                {team.players.sort((a, b) => a.number - b.number).map(p => (
-                    <div
-                        className={styles.player}
-                        onClick={() => {
-                            setTeam({ ...team, players: team.players.filter(p1 => p1 !== p) });
-                            setDeletedPlayersStack([...deletedPlayersStack, p]);
-                        }}
-                    >
-                        <span>{p.number}</span>
-                        <span>{p.name}</span>
-                    </div>
-                ))}
-                <form
-                    className={styles.player}
-                >
-                    <input
-                        type='number'
-                        onChange={(e) => setNewNumber(e.target.value.length > 2 ? newNumber : parseInt(e.target.value))}
-                        value={newNumber < 0 ? '' : newNumber}
-                        className={`${styles.input} ${team.players.map(p => p.number).includes(newNumber) ? styles.wrong : ''}`}
-                    />
-                    <input
-                        placeholder='Név'
-                        onChange={(e) => setNewName(e.target.value)}
-                        value={newName}
-                        className={styles.input}
-                    />
-                    {newNumber >= 0 && newName !== '' && !team.players.map(p => p.number).includes(newNumber) && 
-                        <button
-                            className='button'
-                            onClick={() => {
-                                setTeam({ ...team, players: [...team.players, { name: newName, number: newNumber }] });
-                                setNewNumber(-1);
-                                setNewName('');
-                                setDeletedPlayersStack([]);
-                                const firstInput = document.forms[0].elements[0] as HTMLInputElement;
-                                firstInput.focus();
-                            }}
-                        >Hozzáadás</button>
-                    }
-                </form>
-                <div
-                    className={styles.buttons}
-                >
-
-                    {initialStateTeam !== team &&
-                        <button
-                            className={`${styles.saveButton} button`}
-                            onClick={() => {
-                                let savedTeams: {name: string, id: string, players: {name: string, number: number}[]}[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
-                                let filtered;
-                                if (!savedTeams) savedTeams = [team];
-                                else {
-                                    filtered = savedTeams.filter(t => t.id !== team.id);
-                                    savedTeams = [...filtered, team];
-                                }
-                                localStorage.setItem('teams', JSON.stringify(savedTeams));
-                                setInitialStateTeam(team);
-                                setDeletedPlayersStack([]);
-                            }}
-                        >
-                            Mentés
-                        </button>
-                    }
-                    {deletedPlayersStack.length > 0 &&
-                        <button
-                            className="button"
-                            onClick={() => {
-                                setTeam(prev => {
-                                    const last = deletedPlayersStack.pop();
-                                    if (!last) return prev;
-                                    return { ...prev, players: [...prev.players, last] }
-                                });
-                            }}
-                        >
-                            Vissza
-                        </button>
-                    }
-                </div>
-            </div>
+	    {players.sort((a, b) => a.number - b.number).map(p => (
+		<div
+		    className={`${styles.player} ${team.players.filter(p1 => p1.number === p.number).length > 0 ? styles.teamPlayer : ''} player`}
+		    onClick={() => {
+			if (team.players.filter(p1 => p1.number === p.number).length > 0) setTeam({...team, players: team.players.filter(p1 => p1.number !== p.number)});
+			else setTeam({...team, players: [...team.players, {name: p.name, number: p.number}]});
+		    }}
+		>
+		    <span>{p.number}</span>
+		    <span>{p.name}</span>
+		</div>
+	    ))}
+	    {changed &&
+	    <button
+		className={`${styles.saveButton} button`}
+		onClick={() => {
+		    let savedTeams: {name: string, id: string, players: {name: string, number: number}[] }[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
+		    let filtered;
+		    if (!savedTeams) savedTeams = [team];
+		    else {
+			filtered = savedTeams.filter(t => t.id !== team.id);
+			savedTeams = [...filtered, team];
+		    }
+		    localStorage.setItem('teams', JSON.stringify(savedTeams));
+		    setChanged(false);
+		}}
+	    >
+		Mentés
+	    </button>
+	    }
         </div >
     )
 }

@@ -90,7 +90,8 @@ export default function Stats() {
 
                     <Records
                         onScored={increaseScore}
-                        header={state.team.name}
+                        teamName={state.team.name}
+                        opponentName={state.opponentName}
                         names={players.map(p => p.name)}
                         numbers={players.map(p => p.number)}
                     />

@@ -1,0 +1,46 @@
+.container {
+    padding: 20px;
+    padding-top: 0;
+}
+
+@media (pointer: fine) {
+    .player {
+	transition: .2s;
+    }
+
+    .player:not(:nth-last-child(1 of .player)):hover {
+        background-color: rgb(255, 49, 84);
+	color: white;
+        text-decoration: line-through;
+	cursor: pointer;
+	scale: 1.02;
+    }
+}
+
+.input {
+    background-color: transparent;
+}
+
+.player> :nth-child(1 of .input) {
+    width: 28px;
+    text-align: right;
+}
+
+:nth-last-child(1 of .player)::before {
+    content: '#';
+    position: absolute;
+}
+
+.player:last-child:has(.wrong)::before {
+    color: var(--red);
+}
+
+.player > button {
+    margin: 0;
+}
+
+.wrong {
+    border-bottom: 2px solid var(--red);
+    color: var(--red);
+}
+

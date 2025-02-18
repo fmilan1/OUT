@@ -1,6 +1,10 @@
 .container {
     width: 100%;
-    padding-top: 20px;
+    padding-block: 20px;
+}
+
+.container > button {
+    margin-left: 20px;
 }
 
 .teamsContainer {
@@ -51,7 +55,6 @@
     place-items: center;
 }
 
-
 .icon {
     position: absolute;
     top: 5px;
@@ -85,7 +88,6 @@
         opacity: 1;
     }
 }
-
 
 .team>img {
     aspect-ratio: 1;
