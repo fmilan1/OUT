@@ -37,15 +37,26 @@ export default function New() {
 		    <span>{player.name}</span>
                 </div>
             ))}
-            <h2>Ellenfél</h2>
-            <input type="text" placeholder='Csapatnév' onChange={(e) => setOpponentName(e.target.value)} />
-	    <br />
-            <button
-                className='button'
-                onClick={() => {
-                    navigate('/stats', { state: { ...state, opponentName: opponentName ?? '', id: uid() } });
-                }}
-            >Új jegyzőkönyv indítása</button>
+	    <h2>Ellenfél</h2>
+	    <form
+		onSubmit={(e) => {
+		    e.preventDefault();
+		    if (e.currentTarget.checkValidity()) navigate('/stats', { state: { ...state, opponentName: opponentName ?? '', id: uid() } });
+		    
+		    else e.currentTarget.reportValidity();
+		}}
+	    >
+		<input
+		    required
+		    type="text" 
+		    placeholder='Csapatnév'
+		    onChange={(e) => setOpponentName(e.target.value)}
+		/>
+		<br />
+		<button
+		    className='button'
+		>Új jegyzőkönyv indítása</button>
+	    </form>
             {savedStats.length > 0 &&
                 <>
                     <h2
