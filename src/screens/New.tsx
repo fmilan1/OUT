@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import styles from '../styles/New.module.css';
+import styles from '../styles/New.module.scss';
 import { useLocation, useNavigate } from 'react-router';
 import { uid } from 'uid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

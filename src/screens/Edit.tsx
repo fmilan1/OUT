@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import styles from '../styles/Edit.module.css'
+import styles from '../styles/Edit.module.scss'
 
 export default function Edit() {
 

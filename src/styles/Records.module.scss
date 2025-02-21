@@ -1,21 +1,15 @@
 .container {
-    /* max-width: 500px; */
-    width: 100%;
+    max-width: 500px; 
+    min-width: 100%;
     scroll-snap-align: center;
     scroll-snap-stop: always;
     border-radius: 10px;
     box-shadow: 0px 1.5px 5px 1px grey;
     overflow: hidden;
+    margin-inline: auto;
+    position: relative;
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;
-    position: relative;
-}
-
-@media (max-width: 628px) {
-    .container {
-        min-width: 100%;
-    }
 }
 
 .recordContainer {
@@ -27,11 +21,11 @@
 }
 
 .header {
-    width: 100%;
     font-size: 30px;
     box-shadow: 0 1px 5px 0px grey;
     background-color: white;
     z-index: 2;
+    position: relative;
     min-height: 50px;
     display: grid;
     place-items: center;
@@ -40,6 +34,10 @@
 
 .header>:nth-child(1) {
     justify-self: end;
+}
+
+.header>:not(:nth-child(1)) {
+    color: lightgrey;
 }
 
 .header>:nth-child(3) {
@@ -51,6 +49,7 @@
     background-color: white;
     display: grid;
     grid-template-columns: 1fr 2fr;
+    height: min-content;
     height: 35px;
     gap: 15px;
     box-sizing: border-box;

@@ -1,0 +1,88 @@
+@use '../index.scss';
+
+.teamsContainer {
+  margin: 0;
+  overflow: scroll;
+  display: flex;
+  padding: var(--gap);
+  box-sizing: border-box;
+  gap: var(--gap);
+}
+
+.teamsContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.team {
+  border-radius: 10px;
+  min-width: 150px;
+  aspect-ratio: 1;
+  box-shadow: var(--boxShadow);
+  cursor: pointer;
+  transition: .2s;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.team>span {
+  background-color: rgba(0, 0, 0, 0.15);
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  color: white;
+  transition: .2s;
+  height: 25px;
+  display: grid;
+  place-items: center;
+}
+
+.icon {
+  position: absolute;
+  top: 5px;
+  transition: .2s;
+  color: grey;
+}
+
+.edit {
+  right: 5px;
+}
+
+.people {
+  left: 5px;
+  color: rgb(218, 218, 218);
+}
+
+.people>svg {
+  scale: .75;
+}
+
+@media (pointer: fine) {
+  .team:hover {
+    scale: 1.1;
+  }
+
+  .team>.icon {
+    opacity: 0;
+  }
+
+  .team:hover .icon {
+    opacity: 1;
+  }
+}
+
+.team>img {
+  aspect-ratio: 1;
+  margin: 25px;
+}
+
+.team:first-child {
+  /* new team button */
+  background-color: rgb(237, 237, 237);
+  display: grid;
+  place-items: center;
+  font-size: 150px;
+  line-height: 150px;
+  color: rgb(218, 218, 218);
+}

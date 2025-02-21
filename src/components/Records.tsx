@@ -1,4 +1,4 @@
-import styles from '../styles/Records.module.css';
+import styles from '../styles/Records.module.scss';
 import { useState } from "react";
 
 interface Props {
@@ -17,7 +17,7 @@ export default function Records(props: Props) {
     const record = (name: string, number: number, key: string) => {
         return (
             <div
-		key={key}
+                key={key}
                 className={`${styles.record} ${number === assister || number === scorer ? styles.selected : ''}`}
                 onClick={() => {
                     if (assister === -1) setAssister(number);
@@ -70,9 +70,9 @@ export default function Records(props: Props) {
                 <div
                     className={styles.header}
                 >
-		    <span>{props.teamName}</span>
-		    <span>vs</span>
-		    <span>{props.opponentName}</span>
+                    <span>{props.teamName}</span>
+                    <span>vs</span>
+                    <span>{props.opponentName}</span>
                 </div>
                 <div
                     className={styles.recordContainer}
@@ -81,12 +81,12 @@ export default function Records(props: Props) {
                         record(name, props.numbers[index], index.toString())
                     ))}
                 </div>
-                    <div
-                        className={styles.opponent}
-                        onClick={() => props.onScored(assister, scorer, false)}
-                    >
-                        Ellenfél szerzett pontot :(
-                    </div>
+                <div
+                    className={styles.opponent}
+                    onClick={() => props.onScored(assister, scorer, false)}
+                >
+                    Ellenfél szerzett pontot :(
+                </div>
                 {assister !== -1 && scorer !== -1 && contineuButton()}
             </div>
         </>

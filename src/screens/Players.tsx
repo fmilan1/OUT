@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import styles from '../styles/Players.module.css';
+import styles from '../styles/Players.module.scss';
 
 export default function Players() {
 

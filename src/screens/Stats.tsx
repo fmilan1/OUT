@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router';
 import Records from '../components/Records';
 import Table from '../components/Table';
-import styles from '../styles/Stats.module.css';
+import styles from '../styles/Stats.module.scss';
 import {
     useState,
     useEffect
@@ -17,7 +17,7 @@ export default function Stats() {
     useEffect(() => {
         setPlayers(state.team.players);
     });
-    
+
     useEffect(() => {
         const storageStats: { modified: number, teamId: string, id: string, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         let thisStorageStat = storageStats.find(s => s.id === state.id);
@@ -30,10 +30,10 @@ export default function Stats() {
     }, [scorers])
 
     function increaseScore(assister: number, scorer: number, isOurScore: boolean) {
-	console.log(scorers);
+        console.log(scorers);
         setScorers([...scorers, { assist: assister, goal: scorer, isOurScore }])
     }
-    
+
     function saveStat() {
         let savedStats: { modified: number, teamId: string, id: string, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         let filtered;
@@ -57,7 +57,7 @@ export default function Stats() {
     }
 
     function deleteLast() {
-	setScorers(prev => prev.slice(0, -1));
+        setScorers(prev => prev.slice(0, -1));
     }
 
     return (
@@ -103,7 +103,7 @@ export default function Stats() {
                     teamName={state.team.name}
                     opponentName={state.opponentName}
                     scorers={scorers}
-		    onDeleteLast={deleteLast}
+                    onDeleteLast={deleteLast}
                 />
             }
         </>
