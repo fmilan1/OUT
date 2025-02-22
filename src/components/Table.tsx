@@ -30,7 +30,7 @@ export default function Table(props: Props) {
                 </tr>
                 <tr>
                     <th colSpan={2}>Állás</th>
-                    <th>Asszist</th>
+                    <th>Assziszt</th>
                     <th>Pont</th>
                 </tr>
                 {(props.scorers) &&
