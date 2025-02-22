@@ -26,7 +26,7 @@ export default function Table(props: Props) {
                 className={styles.table}
             >
                 <tr>
-                    <th colSpan={4} >{props.teamName} <span className={styles.bold}>vs {props.opponentName}</span></th>
+                    <th colSpan={4} >{props.teamName} <span className={styles.gray}>vs {props.opponentName}</span></th>
                 </tr>
                 <tr>
                     <th colSpan={2}>Állás</th>
@@ -36,8 +36,8 @@ export default function Table(props: Props) {
                 {(props.scorers) &&
                     props.scorers.map((s, index) => (
                         <tr>
-                            <td className={`${styles.small} ${!s.isOurScore && styles.bold}`}>{props.scorers.filter((s1, index1) => s1.isOurScore && index >= index1).length}</td>
-                            <td className={`${styles.small} ${s.isOurScore && styles.bold}`}>{props.scorers.filter((s1, index1) => !s1.isOurScore && index >= index1).length}</td>
+                            <td className={`${styles.small} ${!s.isOurScore && styles.gray}`}>{props.scorers.filter((s1, index1) => s1.isOurScore && index >= index1).length}</td>
+                            <td className={`${styles.small} ${s.isOurScore && styles.gray}`}>{props.scorers.filter((s1, index1) => !s1.isOurScore && index >= index1).length}</td>
                             {s.isOurScore &&
                                 <>
                                     <td>{s.assist === s.goal ? 'C' : s.assist}</td>

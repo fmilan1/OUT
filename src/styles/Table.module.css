@@ -32,9 +32,10 @@ th {
     width: 35px;
 }
 
-.bold {
-    color: rgb(179, 179, 179);
+.gray {
+    color: lightgray;
     border-color: black;
+    font-weight: 100;
 }
 
 .table {
