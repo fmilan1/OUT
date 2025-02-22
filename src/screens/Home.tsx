@@ -46,7 +46,7 @@ export default function Home() {
                         navigate('/edit', {
                             state: {
                                 team: { name: 'Új csapat', id, players: [] },
-				players: JSON.parse(localStorage.getItem('players') ?? '[]'),
+                                players: JSON.parse(localStorage.getItem('players') ?? '[]'),
 
                             }
                         })
@@ -75,12 +75,13 @@ export default function Home() {
                             icon={faPenToSquare}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                navigate('/edit', { state: 
-				    {
-					team, 
-					players: JSON.parse(localStorage.getItem('players') ?? '[]'),
-				    }
-				});
+                                navigate('/edit', {
+                                    state:
+                                    {
+                                        team,
+                                        players: JSON.parse(localStorage.getItem('players') ?? '[]'),
+                                    }
+                                });
                             }}
                         />
                         <img src="out.svg" alt="Csapatlogó" />
@@ -88,12 +89,12 @@ export default function Home() {
                     </div>
                 ))}
             </div>
-	    <button
-		className='button'
-		onClick={() => {
-		    navigate('/players');
-		}}
-	    >Játékosok kezelése</button>
+            <button
+                className='button'
+                onClick={() => {
+                    navigate('/players');
+                }}
+            >Játékosok kezelése</button>
         </div>
     )
 }
