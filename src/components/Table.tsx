@@ -26,7 +26,7 @@ export default function Table(props: Props) {
                 className={styles.table}
             >
                 <tr>
-                    <th colSpan={4} >{props.teamName}</th>
+                    <th colSpan={4} >{props.teamName} <span className={styles.bold}>vs {props.opponentName}</span></th>
                 </tr>
                 <tr>
                     <th colSpan={2}>Állás</th>
@@ -45,22 +45,22 @@ export default function Table(props: Props) {
                                 </>
                             }
                             {!s.isOurScore &&
-				<td colSpan={2}>-</td>
+                                <td colSpan={2}>-</td>
                             }
                         </tr>
                     ))
                 }
-		{props.scorers.length > 0 &&
-		    <tr>
-			<td
-			    className={styles.delete}
-			    colSpan={4}
-			    onClick={props.onDeleteLast}
-			>
-			    Visszavonás
-			</td>
-		    </tr>
-		}
+                {props.scorers.length > 0 &&
+                    <tr>
+                        <td
+                            className={styles.delete}
+                            colSpan={4}
+                            onClick={props.onDeleteLast}
+                        >
+                            Visszavonás
+                        </td>
+                    </tr>
+                }
             </table>
         </div>
     )
