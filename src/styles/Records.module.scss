@@ -61,10 +61,6 @@
     background-color: rgb(240, 240, 240);
 }
 
-.record.selected {
-    background-color: aquamarine;
-}
-
 .opponent {
     min-height: 35px;
     background-color: grey;
@@ -124,13 +120,14 @@
     position: absolute;
     width: 50px;
     height: 50px;
-    /* left: 50%; */
     bottom: 20px;
     right: 20px;
-    /* transform: translateX(-50%); */
-    /* display: none; */
 }
 
 .continueButton:hover {
     scale: 1.1;
+}
+
+.selected {
+    background-color: aquamarine;
 }

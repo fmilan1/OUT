@@ -11,8 +11,8 @@ interface Props {
 
 export default function Records(props: Props) {
 
-    const [assister, setAssister] = useState<number>(-1);
-    const [scorer, setScorer] = useState<number>(-1);
+    const [assister, setAssister] = useState<number>(-Infinity);
+    const [scorer, setScorer] = useState<number>(-Infinity);
 
     const record = (name: string, number: number, key: string) => {
         return (
@@ -52,9 +52,9 @@ export default function Records(props: Props) {
             <div
                 className={styles.continueButton}
                 onClick={() => {
-                    setAssister(-1);
-                    setScorer(-1);
-                    props.onScored(assister, scorer, true);
+                    setAssister(-Infinity);
+                    setScorer(-Infinity);
+                    props.onScored(assister, scorer, assister !== -1);
                 }}
             >
                 ✓
@@ -82,12 +82,16 @@ export default function Records(props: Props) {
                     ))}
                 </div>
                 <div
-                    className={styles.opponent}
-                    onClick={() => props.onScored(assister, scorer, false)}
+                    className={`${styles.opponent} ${assister === -1 ? styles.selected : ''}`}
+                    //onClick={() => props.onScored(assister, scorer, false)}
+                    onClick={() => {
+                        setAssister(-1);
+                        setScorer(-1);
+                    }}
                 >
                     Ellenfél szerzett pontot :(
                 </div>
-                {assister !== -1 && scorer !== -1 && contineuButton()}
+                {assister >= -1 && contineuButton()}
             </div>
         </>
     )
