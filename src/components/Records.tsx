@@ -1,5 +1,7 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from '../styles/Records.module.scss';
 import { useState } from "react";
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
     names: string[],
@@ -47,10 +49,10 @@ export default function Records(props: Props) {
         )
     }
 
-    const contineuButton = () => {
+    function contineuButton() {
         return (
             <div
-                className={styles.continueButton}
+                className={`${styles.button} ${styles.continueButton}`}
                 onClick={() => {
                     setAssister(-Infinity);
                     setScorer(-Infinity);
@@ -60,6 +62,22 @@ export default function Records(props: Props) {
                 ✓
             </div>
         );
+    }
+
+    function backButton() {
+        return (
+            <div
+                className={`${styles.button} ${styles.backButton}`}
+                onClick={() => {
+                    setAssister(-Infinity);
+                    setScorer(-Infinity);
+                }}
+            >
+                <FontAwesomeIcon
+                    icon={faXmark}
+                />
+            </ div>
+        )
     }
 
     return (
@@ -90,7 +108,16 @@ export default function Records(props: Props) {
                 >
                     Ellenfél szerzett pontot :(
                 </div>
-                {assister >= -1 && scorer >= -1 && contineuButton()}
+                {assister >= -1 &&
+                    <div
+                        className={styles.buttons}
+                    >
+                        {scorer >= -1 &&
+                            <>{contineuButton()}</>
+                        }
+                        <>{backButton()}</>
+                    </div>
+                }
             </div>
         </>
     )

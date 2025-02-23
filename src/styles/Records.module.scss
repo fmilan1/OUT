@@ -1,133 +1,150 @@
 .container {
-    max-width: 500px; 
-    min-width: 100%;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
-    border-radius: 10px;
-    box-shadow: 0px 1.5px 5px 1px grey;
-    overflow: hidden;
-    margin-inline: auto;
-    position: relative;
-    display: flex;
-    flex-direction: column;
+  max-width: 500px;
+  min-width: 100%;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  border-radius: 10px;
+  box-shadow: 0px 1.5px 5px 1px grey;
+  overflow: hidden;
+  margin-inline: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 50px;
 }
 
 .recordContainer {
-    overflow: scroll;
+  overflow: scroll;
 }
 
 .recordContainer::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .header {
-    font-size: 30px;
-    box-shadow: 0 1px 5px 0px grey;
-    background-color: white;
-    z-index: 2;
-    position: relative;
-    min-height: 50px;
-    display: grid;
-    place-items: center;
-    grid-template-columns: 1fr .4fr 1fr;
+  font-size: 30px;
+  box-shadow: 0 1px 5px 0px grey;
+  background-color: white;
+  z-index: 2;
+  position: relative;
+  min-height: 50px;
+  display: grid;
+  place-items: center;
+  grid-template-columns: 1fr .4fr 1fr;
 }
 
 .header>:nth-child(1) {
-    justify-self: end;
+  justify-self: end;
 }
 
 .header>:not(:nth-child(1)) {
-    color: lightgrey;
+  color: lightgrey;
 }
 
 .header>:nth-child(3) {
-    justify-self: start;
+  justify-self: start;
 }
 
 .record {
-    position: relative;
-    background-color: white;
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    height: min-content;
-    height: 35px;
-    gap: 15px;
-    box-sizing: border-box;
-    cursor: pointer;
-    place-items: center;
+  position: relative;
+  background-color: white;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  height: min-content;
+  height: 35px;
+  gap: 15px;
+  box-sizing: border-box;
+  cursor: pointer;
+  place-items: center;
 }
 
 .record:nth-child(even) {
-    background-color: rgb(240, 240, 240);
+  background-color: rgb(240, 240, 240);
 }
 
 .opponent {
-    min-height: 35px;
-    background-color: grey;
-    color: white;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
+  min-height: 35px;
+  background-color: grey;
+  color: white;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
 }
 
 
 @media (pointer: fine) {
-    .record:hover {
-        background-color: aquamarine;
-    }
+  .record:hover {
+    background-color: aquamarine;
+  }
 
-    .opponent:hover {
-        background-color: var(--hoverColor);
-    }
+  .opponent:hover {
+    background-color: var(--hoverColor);
+  }
+
+  .button:hover {
+    scale: 1.1;
+  }
 }
 
 .number {
-    text-align: right;
-    position: relative;
-    width: 100%;
+  text-align: right;
+  position: relative;
+  width: 100%;
 
 }
 
 .number::after {
-    content: '#';
-    position: absolute;
-    right: 17px;
+  content: '#';
+  position: absolute;
+  right: 17px;
 }
 
 .name {
-    text-align: left;
-    width: 100%;
+  text-align: left;
+  width: 100%;
 }
 
 .label {
-    float: left;
-    color: blueviolet;
-    margin-left: 15px;
+  float: left;
+  color: blueviolet;
+  margin-left: var(--gap);
+}
+
+.button {
+  border-radius: 15px;
+  box-shadow: var(--boxShadow);
+  color: white;
+  cursor: pointer;
+  transition: .1s;
+  font-size: 15px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  width: 50px;
+  aspect-ratio: 1;
+  bottom: var(--gap);
 }
 
 .continueButton {
-    color: white;
-    border-radius: 15px;
-    background-color: rgb(100, 100, 255);
-    box-shadow: 0px 1.5px 5px 1px grey;
-    cursor: pointer;
-    transition: .1s;
-    z-index: 100;
-    font-size: 15px;
-    display: grid;
-    place-items: center;
-    text-align: center;
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    bottom: 20px;
-    right: 20px;
+  background-color: rgb(0, 255, 100);
 }
 
-.continueButton:hover {
-    scale: 1.1;
+.backButton {
+  background-color: var(--red);
 }
 
-.record.selected, .selected {
-    background-color: aquamarine;
+.buttons {
+  font-weight: 900;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: var(--gap);
+  right: var(--gap);
+  gap: calc(var(--gap) / 2);
+  z-index: 2;
+}
+
+.record.selected,
+.selected {
+  background-color: aquamarine;
 }
