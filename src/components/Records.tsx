@@ -20,11 +20,11 @@ export default function Records(props: Props) {
                 key={key}
                 className={`${styles.record} ${number === assister || number === scorer ? styles.selected : ''}`}
                 onClick={() => {
-                    if (assister === -1) setAssister(number);
-                    else if (scorer === -1) setScorer(number);
+                    if (assister === -Infinity) setAssister(number);
+                    else if (scorer === -Infinity) setScorer(number);
                     else {
                         setAssister(number);
-                        setScorer(-1);
+                        setScorer(-Infinity);
                     }
                 }}
             >
@@ -90,7 +90,7 @@ export default function Records(props: Props) {
                 >
                     Ellenfél szerzett pontot :(
                 </div>
-                {assister >= -1 && contineuButton()}
+                {assister >= -1 && scorer >= -1 && contineuButton()}
             </div>
         </>
     )
