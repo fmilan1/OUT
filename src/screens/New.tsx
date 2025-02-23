@@ -131,6 +131,9 @@ export default function New() {
                                     #
                                 </th>
                                 <th>
+                                    Név
+                                </th>
+                                <th>
                                     Assziszt
                                 </th>
                                 <th>
@@ -144,11 +147,16 @@ export default function New() {
                         {
                             <tbody>
                                 {
-                                    team.players.sort((a, b) => a.number - b.number).map((p, index) => (
+                                    team.players.sort((a, b) =>
+                                        ((goalDic[b.number] ?? 0) + (assistDic[b.number] ?? 0)) -
+                                        ((goalDic[a.number] ?? 0) + (assistDic[a.number] ?? 0))
+                                    )
+                                    .map((p, index) => (
                                         <tr
                                             key={index}
                                         >
                                             <td>{p.number}</td>
+                                            <td>{p.name}</td>
                                             <td>{assistDic[p.number] ?? 0}</td>
                                             <td>{goalDic[p.number] ?? 0}</td>
                                             <td>{(assistDic[p.number] ?? 0) + (goalDic[p.number] ?? 0)}</td>
