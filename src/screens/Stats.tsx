@@ -30,7 +30,6 @@ export default function Stats() {
     }, [scorers])
 
     function increaseScore(assister: number, scorer: number, isOurScore: boolean) {
-        console.log(scorers);
         setScorers([...scorers, { assist: assister, goal: scorer, isOurScore }])
     }
 
