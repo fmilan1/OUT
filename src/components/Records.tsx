@@ -83,7 +83,6 @@ export default function Records(props: Props) {
                 </div>
                 <div
                     className={`${styles.opponent} ${assister === -1 && scorer === -1 ? styles.selected : ''}`}
-                    //onClick={() => props.onScored(assister, scorer, false)}
                     onClick={() => {
                         setAssister(-1);
                         setScorer(-1);
