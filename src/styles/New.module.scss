@@ -81,3 +81,7 @@
     border-collapse: collapse;
     text-align: center;
 }
+
+.table tr td:last-child {
+  font-weight: 900;
+}
