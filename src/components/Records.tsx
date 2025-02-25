@@ -24,7 +24,7 @@ export default function Records(props: Props) {
                     if (assister === -Infinity) setAssister(player.number);
                     else if (scorer === -Infinity) setScorer(player.number);
                     else {
-                        setAssister(number);
+                        setAssister(player.number);
                         setScorer(-Infinity);
                     }
                 }}
