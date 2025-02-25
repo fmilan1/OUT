@@ -107,7 +107,7 @@
 .label {
   float: left;
   color: blueviolet;
-  margin-left: var(--gap);
+  margin-left: calc(var(--gap) / 2);
 }
 
 .button {

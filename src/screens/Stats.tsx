@@ -91,8 +91,7 @@ export default function Stats() {
                         onScored={increaseScore}
                         teamName={state.team.name}
                         opponentName={state.opponentName}
-                        names={players.map(p => p.name)}
-                        numbers={players.map(p => p.number)}
+                        players={players}
                     />
                 </div>
             </div>

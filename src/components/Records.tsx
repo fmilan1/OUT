@@ -4,8 +4,7 @@ import { useState } from "react";
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
-    names: string[],
-    numbers: number[],
+    players: { name: string, number: number }[],
     teamName: string,
     opponentName: string,
     onScored: (assister: number, scorer: number, isOurScore: boolean) => void,
@@ -16,14 +15,14 @@ export default function Records(props: Props) {
     const [assister, setAssister] = useState<number>(-Infinity);
     const [scorer, setScorer] = useState<number>(-Infinity);
 
-    const record = (name: string, number: number, key: string) => {
+    const record = (player: { name: string, number: number }, key: number) => {
         return (
             <div
                 key={key}
-                className={`${styles.record} ${number === assister || number === scorer ? styles.selected : ''}`}
+                className={`${styles.record} ${player.number === assister || player.number === scorer ? styles.selected : ''}`}
                 onClick={() => {
-                    if (assister === -Infinity) setAssister(number);
-                    else if (scorer === -Infinity) setScorer(number);
+                    if (assister === -Infinity) setAssister(player.number);
+                    else if (scorer === -Infinity) setScorer(player.number);
                     else {
                         setAssister(number);
                         setScorer(-Infinity);
@@ -35,15 +34,15 @@ export default function Records(props: Props) {
                 >
                     <span
                         className={styles.label}
-                    > {assister !== -1 && scorer !== -1 && assister === scorer && assister === number ? 'CALLAHAN' : number === assister ? 'ASSIST' : number === scorer ? 'GOAL' : ''}
+                    > {assister !== -1 && scorer !== -1 && assister === scorer && assister === player.number ? 'CALLAHAN' : player.number === assister ? 'ASSIST' : player.number === scorer ? 'GOAL' : ''}
                     </span>
-                    {number}
+                    {player.number}
                 </span>
 
                 <span
                     className={styles.name}
                 >
-                    {name}
+                    {player.name}
                 </span>
             </div>
         )
@@ -95,8 +94,8 @@ export default function Records(props: Props) {
                 <div
                     className={styles.recordContainer}
                 >
-                    {props.names.map((name, index) => (
-                        record(name, props.numbers[index], index.toString())
+                    {props.players.sort((a, b) => a.number - b.number).map((player, index) => (
+                        record(player, index)
                     ))}
                 </div>
                 <div
