@@ -5,10 +5,10 @@ dotenv.config({});
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    allowedHosts: true,
-    port: 3000,
-    host: process.env.VITE_DEV_IP,
-  }
+    plugins: [react()],
+    server: {
+        allowedHosts: true,
+        port: 3000,
+        host: process.env.VITE_DEV_IP,
+    }
 })

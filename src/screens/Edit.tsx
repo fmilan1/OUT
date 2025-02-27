@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import styles from '../styles/Edit.module.scss'
+import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default function Edit() {
 
     const { state } = useLocation();
     const navigate = useNavigate();
-    const [players, _] = useState<{ name: string, number: number }[]>(state.players);
+    const [players, _setPlayers] = useState<{ name: string, number: number }[]>(state.players);
 
     const [team, setTeam] = useState<{ players: { name: string, number: number }[], name: string, id: string }>(state.team);
     const [changed, setChanged] = useState(false);
 
     useEffect(() => {
+
+
+
         let storageTeams: { name: string, id: string, players: { name: string, number: number }[] }[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
         let thisTeam = storageTeams.find(p => p.id === state.team.id);
         if (thisTeam) setTeam(thisTeam);
@@ -37,7 +42,7 @@ export default function Edit() {
             </h1>
             <button
                 className={`${styles.delete} button`}
-                onClick={() => {
+                onClick={async () => {
 
                     let savedTeams: { players: { name: string, number: number }[], name: string, id: string }[] = JSON.parse(localStorage.getItem('teams') ?? '');
                     let filtered;
@@ -50,6 +55,14 @@ export default function Edit() {
                     let savedStats: { modified: number, id: string, teamId: string, opponentName: string, scorers: {}[], opponentScorers: {}[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
                     savedStats = savedStats.filter(s => s.teamId !== team.id);
                     localStorage.setItem('stats', JSON.stringify(savedStats));
+                    const teamRef = doc(db, 'users', state.userId, 'teams', team.id);
+                    await deleteDoc(teamRef);
+                    
+                    const playersRef = collection(db, teamRef.path, 'players');
+                    const playersSnap = await getDocs(playersRef);
+                    playersSnap.forEach(async p => {
+                        await deleteDoc(p.ref);
+                    });
                     navigate('/');
                 }}
             >
@@ -72,7 +85,7 @@ export default function Edit() {
             {changed &&
                 <button
                     className={`${styles.saveButton} button`}
-                    onClick={() => {
+                    onClick={async () => {
                         let savedTeams: { name: string, id: string, players: { name: string, number: number }[] }[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
                         let filtered;
                         if (!savedTeams) savedTeams = [team];
@@ -82,6 +95,17 @@ export default function Edit() {
                         }
                         localStorage.setItem('teams', JSON.stringify(savedTeams));
                         setChanged(false);
+                        const teamRef = doc(db, 'users', state.userId, 'teams', team.id.toString());
+                        await setDoc(teamRef, { name: team.name });
+                        const playersRef = collection(db, 'users', state.userId, 'teams', team.id.toString(), 'players');
+                        const playersSnap = await getDocs(playersRef);
+                        playersSnap.forEach(async p => {
+                            await deleteDoc(p.ref);
+                        });
+                        team.players.forEach(async p => {
+                            const playerRef = doc(db, 'users', state.userId, 'teams', team.id.toString(), 'players', p.number.toString());
+                            await setDoc(playerRef, { name: p.name });
+                        })
                     }}
                 >
                     Mentés

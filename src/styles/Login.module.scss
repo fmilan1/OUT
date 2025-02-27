@@ -1,0 +1,11 @@
+@use '../index.scss';
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.button:hover {
+  scale: 1.02;
+}
