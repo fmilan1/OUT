@@ -62,6 +62,15 @@ export default function Players() {
                         setPlayers(players.filter(p1 => p1.number !== p.number));
                         const playerRef = doc(db, 'users', state.userId, 'players', p.number.toString());
                         await deleteDoc(playerRef);
+                        const teamsRef = collection(db, 'users', state.userId, 'teams');
+                        const teamsSnap = await getDocs(teamsRef);
+                        teamsSnap.forEach(async t => {
+                            const playersRef = collection(db, teamsRef.path, t.id.toString(), 'players');
+                            const playersSnap = await getDocs(playersRef);
+                            playersSnap.forEach(async player => {
+                                if (player.id === p.number.toString()) await deleteDoc(player.ref);
+                            })
+                        })
                         setDeletedPlayersStack([...deletedPlayersStack, p]);
                     }}
                 >
