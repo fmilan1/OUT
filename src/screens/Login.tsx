@@ -4,12 +4,13 @@ import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router';
 import { doc, setDoc } from 'firebase/firestore';
+import { FirebaseError } from 'firebase/app';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPasswrod] = useState('');
 
-    const [error, _setError] = useState('');
+    const [error, setError] = useState('');
 
     const navigate = useNavigate();
 
@@ -38,7 +39,7 @@ export default function Login() {
                     required
                     type='email'
                     inputMode='email'
-                    placeholder='Email'
+                    placeholder='E-mail cím'
                     onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
@@ -51,10 +52,23 @@ export default function Login() {
                     type='submit'
                     className={styles.button}
                     onClick={async () => {
+                        setError('');
                         try {
                             await signInWithEmailAndPassword(auth, email, password);
                         } catch (error) {
-                            console.log(error);
+                            if (error instanceof FirebaseError) {
+                                switch (error.code) {
+                                    case 'auth/invalid-email':
+                                        setError('Hibás e-mail cím!')
+                                        break;
+                                    case 'auth/missing-password':
+                                        setError('Adja meg a jelszót!')
+                                        break;
+                                    case 'auth/invalid-credential':
+                                        setError('Nem megfelelő e-mail cím vagy jelszó!')
+                                        break;
+                                }
+                            }
                         }
                     }}
                 >
