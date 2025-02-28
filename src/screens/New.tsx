@@ -59,7 +59,7 @@ export default function New() {
     }, []);
 
     useEffect(() => {
-        //localStorage.setItem('stats', JSON.stringify(savedStats));
+        localStorage.setItem('stats', JSON.stringify(savedStats));
 
         let ad: { [key: number]: number } = {};
         let gd: { [key: number]: number } = {};
