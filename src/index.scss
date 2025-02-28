@@ -38,6 +38,8 @@ html {
   margin-bottom: var(--gap);
   padding-bottom: var(--gap);
   overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .container>* {
@@ -53,6 +55,7 @@ html {
 }
 
 .button {
+  width: max-content;
   border: 0;
   border-radius: 5px;
   background-color: white;

@@ -1,6 +1,7 @@
 
 .container {
     position: absolute;
+    background-color: red;
     height: 90%;
     background-color: white;
     border-radius: 15px;
