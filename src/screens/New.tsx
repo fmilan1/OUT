@@ -136,7 +136,7 @@ export default function New() {
                                 key={index}
                                 className={styles.stat}
                                 onClick={() => {
-                                    navigate('/stats', { state: { ...state, opponentName: stat.opponentName, id: stat.id } });
+                                    navigate('/stats', { state: { ...state, opponentName: stat.opponentName, id: stat.id, scorers: stat.scorers } });
                                 }}
                             >
                                 <div
