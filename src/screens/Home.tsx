@@ -100,9 +100,8 @@ export default function Home() {
                             navigate('/edit', {
                                 state: {
                                     team: { name: 'Új csapat', id, players: [] },
-                                    players: JSON.parse(localStorage.getItem('players') ?? '[]'),
                                     userId,
-
+                                    players,
                                 }
                             })
                         }}
@@ -116,7 +115,6 @@ export default function Home() {
                                     state: {
                                         team,
                                         userId,
-                                        players,
                                     }
                                 });
                             }}
