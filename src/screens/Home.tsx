@@ -116,6 +116,7 @@ export default function Home() {
                                     state: {
                                         team,
                                         userId,
+                                        players,
                                     }
                                 });
                             }}
