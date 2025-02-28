@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router';
 import { uid } from 'uid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default function New() {
 
@@ -24,9 +26,41 @@ export default function New() {
         const filtered = storageStats.filter(s => s.teamId === team.id);
         setSavedStats(filtered);
 
+        async function fetchStats() {
+            const statsRef = collection(db, 'users', state.userId, 'teams', team.id, 'stats');
+            const statsSnap = await getDocs(statsRef);
+            const statsData = statsSnap.docs.map(s => ({
+                id: s.id,
+                modified: s.get('modified'),
+                scorers: s.get('scorers'),
+                opponentName: s.get('opponentName'),
+                teamId: team.id,
+            }));
+
+            setSavedStats([]);
+            statsData.forEach(async s => {
+                const storageStat = filtered.find(storage => s.id === storage.id);
+
+                if (storageStat && storageStat.modified > s.modified) {
+                    setSavedStats(prev => { return [...prev, storageStat] });
+                    await updateDoc(doc(db, 'users', state.userId, 'teams', team.id, 'stats', s.id), {
+                        modified: Date.now(),
+                        scorers: storageStat.scorers,
+                    })
+                }
+                else {
+                    setSavedStats(prev => { return [...prev, s] });
+                }
+            })
+        }
+
+        fetchStats();
+
     }, []);
 
     useEffect(() => {
+        //localStorage.setItem('stats', JSON.stringify(savedStats));
+
         let ad: { [key: number]: number } = {};
         let gd: { [key: number]: number } = {};
         savedStats.forEach(s => {
@@ -61,9 +95,19 @@ export default function New() {
             ))}
             <h2>Ellenfél</h2>
             <form
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                     e.preventDefault();
-                    if (e.currentTarget.checkValidity()) navigate('/stats', { state: { ...state, opponentName: opponentName ?? '', id: uid() } });
+                    if (e.currentTarget.checkValidity()) {
+                        const newUid = uid();
+                        navigate('/stats', { state: { ...state, opponentName: opponentName, id: newUid } });
+                        const statRef = doc(db, 'users', state.userId, 'teams', team.id, 'stats', newUid);
+                        await setDoc(statRef, {
+                            opponentName,
+                            teamId: team.id,
+                            scorers: [],
+                            modified: Date.now(),
+                        });
+                    }
 
                     else e.currentTarget.reportValidity();
                 }}
@@ -106,13 +150,14 @@ export default function New() {
                                 <FontAwesomeIcon
                                     className={styles.icon}
                                     icon={faTrash}
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                         e.stopPropagation();
                                         let stats: { modified: number, id: string, teamId: string, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
                                         stats = stats.filter(s => s.id !== stat.id);
                                         localStorage.setItem('stats', JSON.stringify(stats));
                                         stats = stats.filter(s => s.teamId === team.id);
                                         setSavedStats(stats);
+                                        await deleteDoc(doc(db, 'users', state.userId, 'teams', team.id, 'stats', stat.id));
                                     }}
                                 />
                                 <div
@@ -151,17 +196,17 @@ export default function New() {
                                         ((goalDic[b.number] ?? 0) + (assistDic[b.number] ?? 0)) -
                                         ((goalDic[a.number] ?? 0) + (assistDic[a.number] ?? 0))
                                     )
-                                    .map((p, index) => (
-                                        <tr
-                                            key={index}
-                                        >
-                                            <td>{p.number}</td>
-                                            <td>{p.name}</td>
-                                            <td>{assistDic[p.number] ?? 0}</td>
-                                            <td>{goalDic[p.number] ?? 0}</td>
-                                            <td>{(assistDic[p.number] ?? 0) + (goalDic[p.number] ?? 0)}</td>
-                                        </tr>
-                                    ))
+                                        .map((p, index) => (
+                                            <tr
+                                                key={index}
+                                            >
+                                                <td>{p.number}</td>
+                                                <td>{p.name}</td>
+                                                <td>{assistDic[p.number] ?? 0}</td>
+                                                <td>{goalDic[p.number] ?? 0}</td>
+                                                <td>{(assistDic[p.number] ?? 0) + (goalDic[p.number] ?? 0)}</td>
+                                            </tr>
+                                        ))
                                 }
                             </tbody>
 

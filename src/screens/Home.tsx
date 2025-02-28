@@ -115,6 +115,7 @@ export default function Home() {
                                 navigate('/new', {
                                     state: {
                                         team,
+                                        userId,
                                     }
                                 });
                             }}

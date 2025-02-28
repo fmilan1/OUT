@@ -29,6 +29,7 @@ export default function User() {
                         <li
                             onClick={() => {
                                 signOut(auth);
+                                localStorage.clear();
                             }}
                         >Kilépés</li>
                     </ul>

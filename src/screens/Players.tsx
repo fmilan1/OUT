@@ -32,12 +32,6 @@ export default function Players() {
 
     useEffect(() => {
         localStorage.setItem('players', JSON.stringify(players));
-        async function updatePlayers() {
-
-        }
-
-        updatePlayers();
-
     }, [players]);
 
     return (
