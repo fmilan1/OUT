@@ -12,11 +12,13 @@ export default function Stats() {
     const [players, setPlayers] = useState<{ name: string, number: number }[]>([]);
 
     const { state } = useLocation();
-    const [scorers, setScorers] = useState<{ assist: number, goal: number, isOurScore: boolean }[]>(state.scorers ?? []);
+    const [scorers, setScorers] = useState<{ assist: number, goal: number, isOurScore: boolean }[]>([]);
 
     useEffect(() => {
         setPlayers(state.team.players);
-    });
+        const storageStats: { id: string, modified: number, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[], teamId: string }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+        setScorers(storageStats.find(s => s.id === state.id)?.scorers ?? []);
+    }, []);
 
     useEffect(() => {
         saveStat();
