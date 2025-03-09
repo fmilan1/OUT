@@ -1,0 +1,14 @@
+{
+    "name": "OUT",
+    "short_name": "OUT",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#ffffff",
+    "icons": [
+        {
+            "src": "/out-192x192.png",
+            "size": "64x64",
+            "type": "image/png"
+        }
+    ]
+}
