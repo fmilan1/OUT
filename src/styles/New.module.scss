@@ -17,7 +17,7 @@
 }
 
 .stat {
-  width: 150px;
+  min-width: 150px;
   aspect-ratio: 1;
   border-radius: 10px;
   box-shadow: 0px 1.5px 5px 1px grey;
@@ -29,6 +29,7 @@
   overflow: hidden;
   position: relative;
   user-select: none;
+  text-wrap: nowrap;
 }
 
 .score {

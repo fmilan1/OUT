@@ -142,9 +142,13 @@ export default function New() {
                                 <div
                                     className={styles.score}
                                 >
+                                    <div>
                                     {stat.scorers.filter(s => s.isOurScore).length}
-                                    <span>-</span>
+                                    </div>
+                                    <div>-</div>
+                                    <div>
                                     {stat.scorers.filter(s => !s.isOurScore).length}
+                                    </div>
                                 </div>
 
                                 <FontAwesomeIcon
