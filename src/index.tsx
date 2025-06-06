@@ -7,6 +7,7 @@ import New from './screens/New';
 import Edit from './screens/Edit';
 import Players from './screens/Players';
 import Login from './screens/Login';
+import Player from './screens/Player';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
@@ -27,6 +28,7 @@ root.render(
                 <Route path='/stats' element={<Stats />} />
                 <Route path='/edit' element={<Edit />} />
                 <Route path='/players' element={<Players />} />
+                <Route path='/player' element={<Player />} />
             </Routes>
         </BrowserRouter>
     </>

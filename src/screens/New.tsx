@@ -88,6 +88,7 @@ export default function New() {
                 <div
                     key={index}
                     className={`${styles.player} player`}
+                    onClick={() => { navigate('/player', { state: { player, stats: savedStats } }) }}
                 >
                     <span>{player.number}</span>
                     <span>{player.name}</span>
@@ -143,11 +144,11 @@ export default function New() {
                                     className={styles.score}
                                 >
                                     <div>
-                                    {stat.scorers.filter(s => s.isOurScore).length}
+                                        {stat.scorers.filter(s => s.isOurScore).length}
                                     </div>
                                     <div>-</div>
                                     <div>
-                                    {stat.scorers.filter(s => !s.isOurScore).length}
+                                        {stat.scorers.filter(s => !s.isOurScore).length}
                                     </div>
                                 </div>
 

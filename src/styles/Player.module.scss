@@ -1,0 +1,26 @@
+@use "../index.scss";
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+
+.table {
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.table td {
+  padding-inline: 10px;
+  border-color: black;
+}
+
+.table:not(:last-child) {
+  margin-bottom: var(--gap);
+}
+
+.highlight {
+  background: var(--hoverColor);
+}

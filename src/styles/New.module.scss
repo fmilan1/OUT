@@ -75,6 +75,15 @@
   .stat:hover {
     scale: 1.1;
   }
+
+  .player {
+    cursor: pointer;
+    transition: .2s;
+    &:hover {
+      background-color: var(--hoverColor);
+      scale: 1.02;
+    }
+  }
 }
 
 .table {
