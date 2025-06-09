@@ -6,6 +6,8 @@ import {
     useState,
     useEffect
 } from "react";
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default function Stats() {
 
@@ -13,30 +15,44 @@ export default function Stats() {
 
     const { state } = useLocation();
     const [scorers, setScorers] = useState<{ assist: number, goal: number, isOurScore: boolean }[]>([]);
+    const [isGirlRatio, setIsGirlRatio] = useState(state.isGirlRatio);
+    const [startingWithGirlsRatio, _setStartingWithGirlsRatio] = useState<boolean>(state.isGirlRatio)
 
     useEffect(() => {
         setPlayers(state.team.players);
         const storageStats: { id: string, modified: number, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[], teamId: string }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
-        setScorers(storageStats.find(s => s.id === state.id)?.scorers ?? []);
+        let thisStat = storageStats.find(s => s.id === state.id);
+        setScorers(thisStat?.scorers ?? []);
     }, []);
 
     useEffect(() => {
-        saveStat();
-    }, [scorers])
+        if (state.isGirlRatio === null || state.isGirlRatio === undefined) return;
+        setIsGirlRatio(Math.floor((scorers.length + 1) % 4 / 2) === 0 ? startingWithGirlsRatio : !startingWithGirlsRatio);
+    }, [scorers]);
 
-    function increaseScore(assister: number, scorer: number, isOurScore: boolean) {
-        setScorers([...scorers, { assist: assister, goal: scorer, isOurScore }])
+    async function increaseScore(assister: number, scorer: number, isOurScore: boolean) {
+        let tmp = [...scorers, { assist: assister, goal: scorer, isOurScore }];
+        setScorers(tmp)
+        saveStat(tmp);
+        await updateDatabaseStat(tmp);
     }
 
-    function saveStat() {
-        let savedStats: { modified: number, teamId: string, id: string, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+    async function saveStat(scorersList: { assist: number, goal: number, isOurScore: boolean }[]) {
+        let savedStats: { modified: number, teamId: string, id: string, opponentName: string, startingWithGirlsRatio: boolean, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         let filtered;
-        if (!savedStats) savedStats = [{ modified: Date.now(), opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers }];
+        if (!savedStats) savedStats = [{ modified: Date.now(), opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers: scorersList, startingWithGirlsRatio }];
         else {
             filtered = savedStats.filter(s => s.id !== state.id);
-            savedStats = [...filtered, { modified: Date.now(), opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers }]
+            savedStats = [...filtered, { modified: Date.now(), opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers: scorersList, startingWithGirlsRatio }]
         }
         localStorage.setItem('stats', JSON.stringify(savedStats));
+    }
+
+    async function updateDatabaseStat(scorersList: { assist: number, goal: number, isOurScore: boolean }[]) {
+        await updateDoc(doc(db, 'users', state.userId, 'teams', state.team.id, 'stats', state.id), {
+            modified: Date.now(),
+            scorers: scorersList,
+        });
     }
 
     const [showTable, setShowTable] = useState(false);
@@ -50,8 +66,12 @@ export default function Stats() {
         else document.exitFullscreen();
     }
 
-    function deleteLast() {
-        setScorers(prev => prev.slice(0, -1));
+    async function deleteLast() {
+        let tmp = [...scorers];
+        tmp = tmp.slice(0, -1)
+        setScorers(tmp);
+        saveStat(tmp);
+        await updateDatabaseStat(tmp);
     }
 
     return (
@@ -71,6 +91,17 @@ export default function Stats() {
                     <span>-</span>
                     {scorers.filter(s => !s.isOurScore).length}
                 </div>
+                {isGirlRatio !== null && isGirlRatio !== undefined &&
+                    <div
+                        className={styles.ratio}
+                    >
+                        {isGirlRatio ?
+                            <span>Lány pont</span>
+                            :
+                            <span>Fiú pont</span>
+                        }
+                    </div>
+                }
 
 
                 <div

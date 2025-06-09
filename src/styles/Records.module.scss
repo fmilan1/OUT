@@ -35,6 +35,7 @@
 
 .header>:nth-child(1) {
   justify-self: end;
+  text-align: right;
 }
 
 .header>:not(:nth-child(1)) {

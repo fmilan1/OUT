@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { uid } from 'uid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export default function New() {
@@ -16,13 +16,16 @@ export default function New() {
 
     const [opponentName, setOpponentName] = useState<string>('');
 
-    const [savedStats, setSavedStats] = useState<{ modified: number, id: string, teamId: string, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[]>([]);
+    const [savedStats, setSavedStats] = useState<{ modified: number, id: string, teamId: string, opponentName: string, startingWithGirlsRatio: boolean, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[]>([]);
 
     const [assistDic, setAssistDic] = useState<{ [key: string]: number }>({});
     const [goalDic, setGoalDic] = useState<{ [key: string]: number }>({});
 
+        const [showRatioOptions, setShowRatioOptions] = useState(false);
+    const [isGirlRatio, setIsGirlRatio] = useState(true)
+    
     useEffect(() => {
-        const storageStats: { modified: number, id: string, teamId: string, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+        const storageStats: { modified: number, id: string, teamId: string, opponentName: string, startingWithGirlsRatio: boolean, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         const filtered = storageStats.filter(s => s.teamId === team.id);
         setSavedStats(filtered);
 
@@ -35,6 +38,7 @@ export default function New() {
                 scorers: s.get('scorers'),
                 opponentName: s.get('opponentName'),
                 teamId: team.id,
+                startingWithGirlsRatio: s.get('startingWithGirlsRatio'),
             }));
 
             setSavedStats([]);
@@ -43,10 +47,6 @@ export default function New() {
 
                 if (storageStat && storageStat.modified > s.modified) {
                     setSavedStats(prev => { return [...prev, storageStat] });
-                    await updateDoc(doc(db, 'users', state.userId, 'teams', team.id, 'stats', s.id), {
-                        modified: Date.now(),
-                        scorers: storageStat.scorers,
-                    })
                 }
                 else {
                     setSavedStats(prev => { return [...prev, s] });
@@ -100,13 +100,14 @@ export default function New() {
                     e.preventDefault();
                     if (e.currentTarget.checkValidity()) {
                         const newUid = uid();
-                        navigate('/stats', { state: { ...state, opponentName: opponentName, id: newUid } });
+                        navigate('/stats', { state: { ...state, opponentName: opponentName, id: newUid, isGirlRatio: showRatioOptions ? isGirlRatio : null } });
                         const statRef = doc(db, 'users', state.userId, 'teams', team.id, 'stats', newUid);
                         await setDoc(statRef, {
                             opponentName,
                             teamId: team.id,
                             scorers: [],
                             modified: Date.now(),
+                            startingWithGirlsRatio: showRatioOptions ? isGirlRatio : null,
                         });
                     }
 
@@ -119,10 +120,43 @@ export default function New() {
                     placeholder='Csapatnév'
                     onChange={(e) => setOpponentName(e.target.value)}
                 />
+                    <div
+                        className={styles.ratioContainer}
+                    >
+                <br />
+                <input
+                    type='checkbox'
+                    id='ratio-checkbox'
+                    onChange={() => setShowRatioOptions(!showRatioOptions)}
+                />
+                <label htmlFor='ratio-checkbox'>Nemek arányának követése</label>
+                {showRatioOptions &&
+                        <>
+                        <h3>Kezdés</h3>
+                        <input
+                            type='radio'
+                            id='girl'
+                            name='ratio'
+                            onChange={() => setIsGirlRatio(true)}
+                            defaultChecked
+                        />
+                        <label htmlFor='girl'>3 fiú - 4 lány</label>
+                        <br />
+                        <input
+                            type='radio'
+                            id='boy'
+                            name='ratio'
+                            onChange={() => setIsGirlRatio(false)}
+                        />
+                        <label htmlFor='boy'>4 fiú - 3 lány</label>
+                        </>
+                    }
+                </div>
                 <br />
                 <button
                     className='button'
                 >Új jegyzőkönyv indítása</button>
+                    
             </form>
             {savedStats.length > 0 &&
                 <>
@@ -137,7 +171,7 @@ export default function New() {
                                 key={index}
                                 className={styles.stat}
                                 onClick={() => {
-                                    navigate('/stats', { state: { ...state, opponentName: stat.opponentName, id: stat.id, scorers: stat.scorers } });
+                                    navigate('/stats', { state: { ...state, opponentName: stat.opponentName, id: stat.id, scorers: stat.scorers, isGirlRatio: stat.startingWithGirlsRatio } });
                                 }}
                             >
                                 <div
@@ -157,7 +191,7 @@ export default function New() {
                                     icon={faTrash}
                                     onClick={async (e) => {
                                         e.stopPropagation();
-                                        let stats: { modified: number, id: string, teamId: string, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+                                        let stats: { modified: number, id: string, teamId: string, opponentName: string, startingWithGirlsRatio: boolean, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
                                         stats = stats.filter(s => s.id !== stat.id);
                                         localStorage.setItem('stats', JSON.stringify(stats));
                                         stats = stats.filter(s => s.teamId === team.id);

@@ -94,3 +94,12 @@
 .table tr td:last-child {
   font-weight: 900;
 }
+
+.ratioContainer > input {
+  transform: translateY(2px);
+}
+
+.ratioContainer h3 {
+  margin: 0;
+  margin-top: 5px;
+}
