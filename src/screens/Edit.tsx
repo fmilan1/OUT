@@ -56,13 +56,18 @@ export default function Edit() {
                     savedStats = savedStats.filter(s => s.teamId !== team.id);
                     localStorage.setItem('stats', JSON.stringify(savedStats));
                     const teamRef = doc(db, 'users', state.userId, 'teams', team.id);
-                    await deleteDoc(teamRef);
-                    
                     const playersRef = collection(db, teamRef.path, 'players');
                     const playersSnap = await getDocs(playersRef);
                     playersSnap.forEach(async p => {
                         await deleteDoc(p.ref);
                     });
+                    const statsRef = collection(db, teamRef.path, 'stats');
+                    const statsSnap = await getDocs(statsRef);
+                    statsSnap.forEach(async s => {
+                        await deleteDoc(s.ref);
+                    });
+                    await deleteDoc(teamRef);
+                    
                     navigate('/');
                 }}
             >
