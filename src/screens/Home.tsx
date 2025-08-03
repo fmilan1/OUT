@@ -142,7 +142,7 @@ export default function Home() {
                                     });
                                 }}
                             />
-                            <img src="out.svg" alt="Csapatlogó" />
+                            <img src={team.name !== "Hungary U20" ? "out.svg" : "hun flag.svg"} alt="Csapatlogó" />
                             <span>{team.name}</span>
                         </div>
                     ))}
