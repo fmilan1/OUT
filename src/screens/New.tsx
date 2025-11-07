@@ -26,7 +26,7 @@ export default function New() {
     const [isGirlRatio, setIsGirlRatio] = useState(true)
 
     const [collapsePlayers, setCollapsePlayers] = useState(true);
-    const [newLoanPlayer, setNewLoanPlayer] = useState(false);
+    // const [newLoanPlayer, setNewLoanPlayer] = useState(false);
 
     useEffect(() => {
         const storageStats: { modified: number, id: string, teamId: string, opponentName: string, startingWithGirlsRatio: boolean, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
