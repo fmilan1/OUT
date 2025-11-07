@@ -129,7 +129,7 @@ export default function New() {
                             <span>{player.name}</span>
                         </div>
                     ))}
-                    {team.loanPlayers.length > 0 &&
+                    {team.loanPlayers?.length > 0 &&
                         <>
 
                             <h3>Kölcsönjátékosok</h3>
