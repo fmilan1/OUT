@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faCaretUp, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Player, Team } from './Home';
+import { Team } from './Home';
 
 export default function New() {
 
