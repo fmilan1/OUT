@@ -3,16 +3,17 @@ import styles from '../styles/New.module.scss';
 import { useLocation, useNavigate } from 'react-router';
 import { uid } from 'uid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown, faCaretUp, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { Player, Team } from './Home';
 
 export default function New() {
 
     const { state } = useLocation();
     const navigate = useNavigate();
 
-    const [team, _] = useState<{ id: string, name: string, players: { name: string, number: number }[] }>(state.team);
+    const [team, _] = useState<Team>(state.team);
 
     const [opponentName, setOpponentName] = useState<string>('');
 
@@ -21,9 +22,12 @@ export default function New() {
     const [assistDic, setAssistDic] = useState<{ [key: string]: number }>({});
     const [goalDic, setGoalDic] = useState<{ [key: string]: number }>({});
 
-        const [showRatioOptions, setShowRatioOptions] = useState(false);
+    const [showRatioOptions, setShowRatioOptions] = useState(false);
     const [isGirlRatio, setIsGirlRatio] = useState(true)
-    
+
+    const [collapsePlayers, setCollapsePlayers] = useState(true);
+    const [newLoanPlayer, setNewLoanPlayer] = useState(false);
+
     useEffect(() => {
         const storageStats: { modified: number, id: string, teamId: string, opponentName: string, startingWithGirlsRatio: boolean, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         const filtered = storageStats.filter(s => s.teamId === team.id);
@@ -83,17 +87,67 @@ export default function New() {
             className={styles.container}
         >
             <h1>{team.name}</h1>
-            <h2>Játékosok</h2>
-            {team.players.sort((a, b) => a.number - b.number).map((player, index) => (
-                <div
-                    key={index}
-                    className={`${styles.player} player`}
-                    onClick={() => { navigate('/player', { state: { player, stats: savedStats } }) }}
-                >
-                    <span>{player.number}</span>
-                    <span>{player.name}</span>
-                </div>
-            ))}
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: 'center',
+                    gap: 10,
+                    position: 'relative',
+                }}
+            >
+                <h2
+                    onClick={() => setCollapsePlayers(!collapsePlayers)}
+                    style={{
+                        cursor: 'pointer',
+                    }}
+                >Játékosok</h2>
+                <FontAwesomeIcon
+                    icon={collapsePlayers ? faCaretDown : faCaretUp}
+                    onClick={() => setCollapsePlayers(!collapsePlayers)}
+                    style={{
+                        cursor: 'pointer',
+                    }}
+                />
+                {/* <button */}
+                {/*     className='button' */}
+                {/*     style={{ */}
+                {/*         marginTop: 0, */}
+                {/*         position: 'absolute', */}
+                {/*         right: 0, */}
+                {/*     }} */}
+                {/* >Kölcsönjátékos felvétele</button> */}
+            </div>
+            {!collapsePlayers &&
+                <>
+                    {team.players.sort((a, b) => a.number - b.number).map((player, index) => (
+                        <div
+                            key={index}
+                            className={`${styles.player} player`}
+                            onClick={() => { navigate('/player', { state: { player, stats: savedStats } }) }}
+                        >
+                            <span>{player.number}</span>
+                            <span>{player.name}</span>
+                        </div>
+                    ))}
+                    {team.loanPlayers.length > 0 &&
+                        <>
+
+                            <h3>Kölcsönjátékosok</h3>
+                            {team.loanPlayers.sort((a, b) => a.number - b.number).map((player, index) => (
+                                <div
+                                    key={index}
+                                    className={`${styles.player} player`}
+                                    onClick={() => { navigate('/player', { state: { player, stats: savedStats } }) }}
+                                >
+                                    <span>{player.number}</span>
+                                    <span>{player.name}</span>
+                                </div>
+                            ))}
+                        </>
+                    }
+                </>
+
+            }
             <h2>Ellenfél</h2>
             <form
                 onSubmit={async (e) => {
@@ -120,35 +174,35 @@ export default function New() {
                     placeholder='Csapatnév'
                     onChange={(e) => setOpponentName(e.target.value)}
                 />
-                    <div
-                        className={styles.ratioContainer}
-                    >
-                <br />
-                <input
-                    type='checkbox'
-                    id='ratio-checkbox'
-                    onChange={() => setShowRatioOptions(!showRatioOptions)}
-                />
-                <label htmlFor='ratio-checkbox'>Nemek arányának követése</label>
-                {showRatioOptions &&
+                <div
+                    className={styles.ratioContainer}
+                >
+                    <br />
+                    <input
+                        type='checkbox'
+                        id='ratio-checkbox'
+                        onChange={() => setShowRatioOptions(!showRatioOptions)}
+                    />
+                    <label htmlFor='ratio-checkbox'>Nemek arányának követése</label>
+                    {showRatioOptions &&
                         <>
-                        <h3>Kezdés</h3>
-                        <input
-                            type='radio'
-                            id='girl'
-                            name='ratio'
-                            onChange={() => setIsGirlRatio(true)}
-                            defaultChecked
-                        />
-                        <label htmlFor='girl'>3 fiú - 4 lány</label>
-                        <br />
-                        <input
-                            type='radio'
-                            id='boy'
-                            name='ratio'
-                            onChange={() => setIsGirlRatio(false)}
-                        />
-                        <label htmlFor='boy'>4 fiú - 3 lány</label>
+                            <h3>Kezdés</h3>
+                            <input
+                                type='radio'
+                                id='girl'
+                                name='ratio'
+                                onChange={() => setIsGirlRatio(true)}
+                                defaultChecked
+                            />
+                            <label htmlFor='girl'>3 fiú - 4 lány</label>
+                            <br />
+                            <input
+                                type='radio'
+                                id='boy'
+                                name='ratio'
+                                onChange={() => setIsGirlRatio(false)}
+                            />
+                            <label htmlFor='boy'>4 fiú - 3 lány</label>
                         </>
                     }
                 </div>
@@ -156,7 +210,7 @@ export default function New() {
                 <button
                     className='button'
                 >Új jegyzőkönyv indítása</button>
-                    
+
             </form>
             {savedStats.length > 0 &&
                 <>

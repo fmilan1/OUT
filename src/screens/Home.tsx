@@ -9,13 +9,25 @@ import { auth, db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import User from '../components/User';
 
+export interface Player {
+    number: number,
+    name: string,
+}
+
+export interface Team {
+    id: string,
+    name: string,
+    players: Player[],
+    loanPlayers: Player[],
+}
+
 export default function Home() {
 
     const [userId, setUserId] = useState<string | undefined>();
     const navigate = useNavigate();
 
-    const [teams, setTeams] = useState<{ name: string, id: string, players: { name: string, number: number }[] }[]>([]);
-    const [players, setPlayers] = useState<{ name: string, number: number }[]>([]);
+    const [teams, setTeams] = useState<Team[]>([]);
+    const [players, setPlayers] = useState<Player[]>([]);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -58,8 +70,15 @@ export default function Home() {
                     const playerData = playersSnap.docs.map(p => ({
                         name: `${p.get('name')}`,
                         number: parseInt(p.id),
-                    }))
-                    return { name: teamName, id: teamId, players: playerData }
+                    }));
+
+                    const loanPlayersSnap = await getDocs(collection(db, 'users', userId, 'teams', teamId, 'loanPlayers'));
+                    const loanPlayersData = loanPlayersSnap.docs.map(p => ({
+                        name: `${p.get('name')}`,
+                        number: parseInt(p.id),
+                    }));
+                    console.log(loanPlayersData);
+                    return { name: teamName, id: teamId, players: playerData, loanPlayers: loanPlayersData }
                 })
             )
             setTeams(teamsData);

@@ -8,10 +8,12 @@ import {
 } from "react";
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { Player } from './Home';
 
 export default function Stats() {
 
-    const [players, setPlayers] = useState<{ name: string, number: number }[]>([]);
+    const [players, setPlayers] = useState<Player[]>([]);
+    const [loanPlayers, setLoanPlayers] = useState<Player[]>([]);
 
     const { state } = useLocation();
     const [scorers, setScorers] = useState<{ assist: number, goal: number, isOurScore: boolean }[]>([]);
@@ -20,6 +22,7 @@ export default function Stats() {
 
     useEffect(() => {
         setPlayers(state.team.players);
+        setLoanPlayers(state.team.loanPlayers);
         const storageStats: { id: string, modified: number, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[], teamId: string }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         let thisStat = storageStats.find(s => s.id === state.id);
         setScorers(thisStat?.scorers ?? []);
@@ -61,11 +64,6 @@ export default function Stats() {
         setShowTable(!showTable);
     }
 
-    function toggleFullscreen() {
-        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-        else document.exitFullscreen();
-    }
-
     async function deleteLast() {
         let tmp = [...scorers];
         tmp = tmp.slice(0, -1)
@@ -76,10 +74,6 @@ export default function Stats() {
 
     return (
         <>
-            <div
-                className={styles.fullscreen}
-                onClick={toggleFullscreen}
-            >⛶</div>
             <div
                 className={styles.container}
             >
@@ -117,7 +111,7 @@ export default function Stats() {
                         onScored={increaseScore}
                         teamName={state.team.name}
                         opponentName={state.opponentName}
-                        players={players}
+                        players={players.concat(loanPlayers)}
                     />
                 </div>
             </div>
