@@ -25,7 +25,7 @@ export default function New() {
     const [showRatioOptions, setShowRatioOptions] = useState(false);
     const [isGirlRatio, setIsGirlRatio] = useState(true)
 
-    const [collapsePlayers, setCollapsePlayers] = useState(true);
+    const [collapsePlayers, setCollapsePlayers] = useState(false);
     // const [newLoanPlayer, setNewLoanPlayer] = useState(false);
 
     useEffect(() => {
