@@ -75,10 +75,54 @@
   .player {
     cursor: pointer;
     transition: .2s;
-    &:hover {
+    // background-color: green;
+    position: relative;
+
+    &:not(:has(.XmarkLoanPlayer:hover)):hover {
       background-color: var(--hoverColor);
-      scale: 1.02;
     }
+  }
+}
+
+.input {
+  position: relative;
+
+  &:nth-child(1) {
+    width: 28px;
+  }
+
+  &:nth-child(2) {
+    text-align: left;
+  }
+}
+
+.newLoanPlayer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &::before {
+    content: '#';
+    position: absolute;
+  }
+}
+
+.input {
+  background-color: transparent;
+  text-align: right;
+}
+
+.XmarkLoanPlayer {
+  color: red;
+  scale: 1.5;
+  aspect-ratio: 1;
+  position: absolute;
+  right: 15px;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: #ff7791;
   }
 }
 
@@ -91,7 +135,7 @@
   font-weight: 900;
 }
 
-.ratioContainer > input {
+.ratioContainer>input {
   transform: translateY(2px);
 }
 

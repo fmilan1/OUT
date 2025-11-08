@@ -22,7 +22,7 @@ export default function Stats() {
 
     useEffect(() => {
         setPlayers(state.team.players);
-        setLoanPlayers(state.team.loanPlayers);
+        setLoanPlayers(state.loanPlayers);
         const storageStats: { id: string, modified: number, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[], teamId: string }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         let thisStat = storageStats.find(s => s.id === state.id);
         setScorers(thisStat?.scorers ?? []);
