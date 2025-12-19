@@ -69,6 +69,11 @@ html {
     margin-top: var(--gap);
   }
 }
+@media (max-width: v.$maxWidth) {
+  .container {
+    padding-top: var(--gap);
+  }
+}
 
 .button {
   width: max-content;
