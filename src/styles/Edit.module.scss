@@ -1,9 +1,5 @@
 @use "../index.scss";
 
-h1>.input {
-  font-size: inherit;
-}
-
 .delete {
   background-color: var(--red);
 }
@@ -35,4 +31,3 @@ h1>.input {
 .delete {
   margin-top: 0;
 }
-

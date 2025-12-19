@@ -16,6 +16,21 @@
   display: none;
 }
 
+select {
+  height: 30px;
+}
+
+h1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &>.input {
+    font-size: inherit;
+
+  }
+}
+
 body,
 html {
   margin: 0;

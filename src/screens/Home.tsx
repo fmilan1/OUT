@@ -16,6 +16,7 @@ export interface Player {
 
 export interface Team {
     id: string,
+    year: number,
     name: string,
     players: Player[],
     loanPlayers: Player[],
@@ -29,16 +30,34 @@ export default function Home() {
     const [teams, setTeams] = useState<Team[]>([]);
     const [players, setPlayers] = useState<Player[]>([]);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [years, setYears] = useState<number[]>(() => {
+        return JSON.parse(sessionStorage.getItem('years') ?? '[]');
+    });
+    const [selectedYear, setSelectedYear] = useState<number>(() => {
+        return parseInt(sessionStorage.getItem('year') ?? '-1');
+    });
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (!user) navigate('/login');
+            if (!user) {
+                navigate('/login');
+                sessionStorage.clear();
+            }
             setUserId(user?.uid);
         });
 
         return unsubscribe;
     }, []);
 
+    useEffect(() => {
+        if (!years.includes(selectedYear)) {
+            setSelectedYear(-1);
+        }
+    }, [years]);
+
+    useEffect(() => {
+        sessionStorage.setItem('year', selectedYear.toString());
+    }, [selectedYear]);
 
     useEffect(() => {
         const storageTeams = JSON.parse(localStorage.getItem("teams") ?? '[]');
@@ -59,12 +78,17 @@ export default function Home() {
         async function fetchTeams() {
             if (!userId) return;
             const teamsSnap = await getDocs(collection(db, 'users', userId, 'teams'));
+            let availableYears: number[] = [];
 
             const teamsData = await Promise.all(
 
                 teamsSnap.docs.map(async t => {
                     const teamId = t.id;
                     const teamName = t.get('name');
+                    const year = t.get('year') ?? 2025;
+                    if (!availableYears.includes(year)) {
+                        availableYears.push(year);
+                    }
 
                     const playersSnap = await getDocs(collection(db, 'users', userId, 'teams', teamId, 'players'));
                     const playerData = playersSnap.docs.map(p => ({
@@ -77,11 +101,14 @@ export default function Home() {
                         name: `${p.get('name')}`,
                         number: parseInt(p.id),
                     }));
-                    console.log(loanPlayersData);
-                    return { name: teamName, id: teamId, players: playerData, loanPlayers: loanPlayersData }
+                    return { name: teamName, id: teamId, year, players: playerData, loanPlayers: loanPlayersData }
                 })
             )
             setTeams(teamsData);
+            availableYears.sort();
+            sessionStorage.setItem('years', JSON.stringify(availableYears));
+            setYears(availableYears);
+
         }
 
         fetchTeams();
@@ -91,23 +118,37 @@ export default function Home() {
         localStorage.setItem('teams', JSON.stringify(teams));
     }, [teams]);
 
-    //useEffect(() => {
-    //    const storageTeams = JSON.parse(localStorage.getItem("teams") ?? '[]');
-    //    setTeams(storageTeams);
-    //
-    //    if (!scrollContainerRef.current) return;
-    //
-    //    scrollContainerRef.current.addEventListener('wheel', handleWheel, { passive: false });
-    //}, []);
-
     return (
         <>
             <User />
             <div
-
                 className={styles.container}
             >
-                <h1>Mentett csapatok</h1>
+                <div>
+                    <h1>
+                        <span>Mentett csapatok</span>
+                        <select
+                            id='years'
+                            value={selectedYear}
+                            onChange={(e) => {
+                                let y = parseInt(e.target.value);
+                                if (Number.isNaN(y)) {
+                                    setSelectedYear(-1);
+                                } else {
+                                    setSelectedYear(y);
+                                }
+                            }}
+                        >
+                            <option value='all'>Minden év</option>
+                            {years.map(y => (
+                                <option
+                                    key={y}
+                                    value={y}
+                                >{y}</option>
+                            ))}
+                        </select>
+                    </h1>
+                </div>
                 <div
                     ref={scrollContainerRef}
                     className={styles.teamsContainer}
@@ -125,7 +166,7 @@ export default function Home() {
                             })
                         }}
                     >+</div>
-                    {teams && teams.map((team) => (
+                    {teams && (selectedYear === -1 ? teams : teams.filter(t => t.year === selectedYear)).map((team) => (
                         <div
                             key={team.id}
                             className={styles.team}

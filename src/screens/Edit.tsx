@@ -3,26 +3,39 @@ import { useLocation, useNavigate } from 'react-router'
 import styles from '../styles/Edit.module.scss'
 import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { Player, Team } from './Home';
 
 export default function Edit() {
 
     const { state } = useLocation();
     const navigate = useNavigate();
-    const [players, _setPlayers] = useState<{ name: string, number: number }[]>(state.players);
+    const [players, _setPlayers] = useState<Player[]>(state.players);
 
-    const [team, setTeam] = useState<{ players: { name: string, number: number }[], name: string, id: string }>(state.team);
+    const [team, setTeam] = useState<Team>(state.team);
     const [changed, setChanged] = useState(false);
+    const [years, setYears] = useState<number[]>([]);
+    const [year, setYear] = useState(team.year ?? 2025);
 
     useEffect(() => {
-
-
-
-        let storageTeams: { name: string, id: string, players: { name: string, number: number }[] }[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
+        let storageTeams: Team[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
         let thisTeam = storageTeams.find(p => p.id === state.team.id);
         if (thisTeam) setTeam(thisTeam);
+        for (let i = 2025; i <= new Date().getFullYear() + 1; i++) {
+            setYears(prev => {
+                let tmp = [...prev];
+                tmp.push(i);
+                return tmp;
+            })
+        }
     }, []);
 
     useEffect(() => {
+        if (year === team.year) return;
+        setChanged(true);
+    }, [year]);
+
+    useEffect(() => {
+        if (JSON.stringify(team) === JSON.stringify(state.team)) return;
         setChanged(true);
     }, [team]);
 
@@ -39,6 +52,17 @@ export default function Edit() {
                     }}
                     value={team.name}
                 />
+                <select id='years'
+                    onChange={(e) => setYear(parseInt(e.target.value))}
+                    value={year}
+                >
+                    {years.map(y => (
+                        <option
+                            key={y}
+                            value={y}
+                        >{y}</option>
+                    ))}
+                </select>
             </h1>
             <button
                 className={`${styles.delete} button`}
@@ -67,7 +91,7 @@ export default function Edit() {
                         await deleteDoc(s.ref);
                     });
                     await deleteDoc(teamRef);
-                    
+
                     navigate('/');
                 }}
             >
@@ -91,7 +115,7 @@ export default function Edit() {
                 <button
                     className={`${styles.saveButton} button`}
                     onClick={async () => {
-                        let savedTeams: { name: string, id: string, players: { name: string, number: number }[] }[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
+                        let savedTeams: Team[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
                         let filtered;
                         if (!savedTeams) savedTeams = [team];
                         else {
@@ -101,7 +125,10 @@ export default function Edit() {
                         localStorage.setItem('teams', JSON.stringify(savedTeams));
                         setChanged(false);
                         const teamRef = doc(db, 'users', state.userId, 'teams', team.id.toString());
-                        await setDoc(teamRef, { name: team.name });
+                        await setDoc(teamRef, {
+                            name: team.name,
+                            year,
+                        });
                         const playersRef = collection(db, 'users', state.userId, 'teams', team.id.toString(), 'players');
                         const playersSnap = await getDocs(playersRef);
                         playersSnap.forEach(async p => {
