@@ -24,6 +24,8 @@ export default function New() {
     const [assistDic, setAssistDic] = useState<{ [key: string]: number }>({});
     const [goalDic, setGoalDic] = useState<{ [key: string]: number }>({});
 
+    const [tablePlayers, setTablePlayers] = useState<Player[]>([]);
+
     const [showRatioOptions, setShowRatioOptions] = useState(false);
     const [isGirlRatio, setIsGirlRatio] = useState(true)
 
@@ -80,19 +82,31 @@ export default function New() {
     useEffect(() => {
         localStorage.setItem('stats', JSON.stringify(savedStats));
 
+        let playerList: Player[] = [];
         let ad: { [key: number]: number } = {};
         let gd: { [key: number]: number } = {};
         savedStats.forEach(s => {
             s.scorers.forEach(sc => {
-                if (sc.assist === -1 || sc.goal === -1) return;
-                if (sc.assist === sc.goal) {
-                    gd[sc.goal] ? gd[sc.goal]++ : gd[sc.goal] = 1;
-                    return;
+                if (sc.assist !== -1 && sc.goal !== -1) {
+                    const tmp = players.concat(loanPlayers);
+                    if (!playerList.find(p => p.number === sc.goal)) {
+                        playerList.push({ number: sc.goal, name: tmp.find(pl => pl.number === sc.goal)?.name ?? '-' });
+                    }
+                    if (!playerList.find(p => p.number === sc.assist)) {
+                        playerList.push({ number: sc.assist, name: tmp.find(pl => pl.number === sc.assist)?.name ?? '-' });
+                    }
                 }
-                ad[sc.assist] ? ad[sc.assist]++ : ad[sc.assist] = 1;
-                gd[sc.goal] ? gd[sc.goal]++ : gd[sc.goal] = 1;
             });
         });
+        playerList.forEach(p => {
+            savedStats.forEach(s => {
+                const goals = s.scorers.filter(sc => p.number === sc.goal).length;
+                const assists = s.scorers.filter(sc => p.number === sc.assist && sc.assist !== sc.goal).length;
+                gd[p.number] ? gd[p.number] += goals : gd[p.number] = goals;
+                ad[p.number] ? ad[p.number] += assists : ad[p.number] = assists;
+            });
+        });
+        setTablePlayers(playerList);
         setAssistDic(ad);
         setGoalDic(gd);
     }, [savedStats])
@@ -363,24 +377,20 @@ export default function New() {
                         {
                             <tbody>
                                 {
-                                    players.concat(loanPlayers).sort((a, b) =>
+                                    tablePlayers.sort((a, b) =>
                                         ((goalDic[b.number] ?? 0) + (assistDic[b.number] ?? 0)) -
                                         ((goalDic[a.number] ?? 0) + (assistDic[a.number] ?? 0))
-                                    )
-                                        .map((p, index) => (
-                                            <tr
-                                                key={index}
-                                            >
-                                                <td>{p.number}</td>
-                                                <td>{p.name}</td>
-                                                <td>{assistDic[p.number] ?? 0}</td>
-                                                <td>{goalDic[p.number] ?? 0}</td>
-                                                <td>{(assistDic[p.number] ?? 0) + (goalDic[p.number] ?? 0)}</td>
-                                            </tr>
-                                        ))
+                                    ).map((tp, index) => (
+                                        <tr key={index}>
+                                            <td>{tp.number}</td>
+                                            <td>{tp.name}</td>
+                                            <td>{assistDic[tp.number]}</td>
+                                            <td>{goalDic[tp.number]}</td>
+                                            <td>{assistDic[tp.number] + goalDic[tp.number]}</td>
+                                        </tr>
+                                    ))
                                 }
                             </tbody>
-
                         }
                     </table>
                 </>
