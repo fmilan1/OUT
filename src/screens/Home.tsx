@@ -31,17 +31,17 @@ export default function Home() {
     const [players, setPlayers] = useState<Player[]>([]);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [years, setYears] = useState<number[]>(() => {
-        return JSON.parse(sessionStorage.getItem('years') ?? '[]');
+        return JSON.parse(localStorage.getItem('years') ?? '[]');
     });
     const [selectedYear, setSelectedYear] = useState<number>(() => {
-        return parseInt(sessionStorage.getItem('year') ?? '-1');
+        return parseInt(localStorage.getItem('year') ?? '-1');
     });
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (!user) {
                 navigate('/login');
-                sessionStorage.clear();
+                // sessionStorage.clear();
             }
             setUserId(user?.uid);
         });
@@ -56,7 +56,7 @@ export default function Home() {
     }, [years]);
 
     useEffect(() => {
-        sessionStorage.setItem('year', selectedYear.toString());
+        localStorage.setItem('year', selectedYear.toString());
     }, [selectedYear]);
 
     useEffect(() => {
@@ -106,7 +106,7 @@ export default function Home() {
             )
             setTeams(teamsData);
             availableYears.sort();
-            sessionStorage.setItem('years', JSON.stringify(availableYears));
+            localStorage.setItem('years', JSON.stringify(availableYears));
             setYears(availableYears);
 
         }
