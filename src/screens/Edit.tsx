@@ -25,7 +25,7 @@ export default function Edit() {
                 let tmp = [...prev];
                 tmp.push(i);
                 return tmp;
-            })
+            });
         }
     }, []);
 
@@ -50,6 +50,7 @@ export default function Edit() {
                     onChange={(e) => {
                         setTeam({ ...team, name: e.target.value });
                     }}
+                    placeholder='Csapatnév'
                     value={team.name}
                 />
                 <select id='years'
@@ -63,6 +64,17 @@ export default function Edit() {
                         >{y}</option>
                     ))}
                 </select>
+            </h1>
+            <h1>
+                <input
+                    className={styles.input}
+                    type='text'
+                    placeholder='Verseny neve'
+                    onChange={(e) => {
+                        setTeam({...team, tournament: e.target.value})
+                    }}
+                    value={team.tournament}
+                />
             </h1>
             <button
                 className={`${styles.delete} button`}
@@ -127,6 +139,7 @@ export default function Edit() {
                         const teamRef = doc(db, 'users', state.userId, 'teams', team.id.toString());
                         await setDoc(teamRef, {
                             name: team.name,
+                            tournament: team.tournament,
                             year,
                         });
                         const playersRef = collection(db, 'users', state.userId, 'teams', team.id.toString(), 'players');

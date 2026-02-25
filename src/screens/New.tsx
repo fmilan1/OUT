@@ -115,7 +115,10 @@ export default function New() {
         <div
             className={styles.container}
         >
-            <h1>{team.name}</h1>
+            <div>
+                <h1>{team.name}</h1>
+                <h2>{team.tournament}</h2>
+            </div>
             <div
                 style={{
                     display: "flex",

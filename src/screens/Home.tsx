@@ -18,6 +18,7 @@ export interface Team {
     id: string,
     year: number,
     name: string,
+    tournament: string,
     players: Player[],
     loanPlayers: Player[],
 }
@@ -84,6 +85,7 @@ export default function Home() {
                 teamsSnap.docs.map(async t => {
                     const teamId = t.id;
                     const teamName = t.get('name');
+                    const tournament = t.get('tournament');
                     const year = t.get('year') ?? 2025;
                     if (!availableYears.includes(year)) {
                         availableYears.push(year);
@@ -100,7 +102,7 @@ export default function Home() {
                         name: `${p.get('name')}`,
                         number: parseInt(p.id),
                     }));
-                    return { name: teamName, id: teamId, year, players: playerData, loanPlayers: loanPlayersData }
+                    return { name: teamName, tournament, id: teamId, year, players: playerData, loanPlayers: loanPlayersData }
                 })
             )
             setTeams(teamsData);
@@ -202,7 +204,10 @@ export default function Home() {
                                 }}
                             />
                             <img src={team.name !== "Hungary" ? "out.svg" : "hun flag.svg"} alt="Csapatlogó" />
-                            <span>{team.name}</span>
+                            <span>
+                                <span>{team.name}</span>
+                                <span>{team.tournament}</span>
+                            </span>
                         </div>
                     ))}
                 </div>
