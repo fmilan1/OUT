@@ -41,7 +41,6 @@ export default function Home() {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (!user) {
                 navigate('/login');
-                // sessionStorage.clear();
             }
             setUserId(user?.uid);
         });
