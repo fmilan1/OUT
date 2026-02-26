@@ -140,7 +140,9 @@ export default function Stats() {
                         <div
                             className={styles.close}
                             onClick={() => {
-                                setEnded(true);
+                                if (confirm("Biztosan le akarja zárni a mérkőzést?") === true) {
+                                    setEnded(true);
+                                }
                             }}
                         >
                             Mérkőzés lezárása
