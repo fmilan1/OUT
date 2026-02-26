@@ -10,6 +10,16 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Player } from './Home';
 
+export interface Stat {
+    id: string,
+    modified: number,
+    opponentName: string,
+    scorers: { assist: number, goal: number, isOurScore: boolean }[],
+    teamId: string,
+    ended: boolean,
+    startingWithGirlsRatio: boolean,
+}
+
 export default function Stats() {
 
     const [players, setPlayers] = useState<Player[]>([]);
@@ -19,12 +29,14 @@ export default function Stats() {
     const [scorers, setScorers] = useState<{ assist: number, goal: number, isOurScore: boolean }[]>([]);
     const [isGirlRatio, setIsGirlRatio] = useState(state.isGirlRatio);
     const [startingWithGirlsRatio, _setStartingWithGirlsRatio] = useState<boolean>(state.isGirlRatio)
+    const [ended, setEnded] = useState(state.ended);
 
     useEffect(() => {
         setPlayers(state.team.players);
         setLoanPlayers(state.loanPlayers);
-        const storageStats: { id: string, modified: number, opponentName: string, scorers: { assist: number, goal: number, isOurScore: boolean }[], teamId: string }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+        const storageStats: Stat[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         let thisStat = storageStats.find(s => s.id === state.id);
+        setEnded(thisStat?.ended ?? false);
         setScorers(thisStat?.scorers ?? []);
     }, []);
 
@@ -32,6 +44,15 @@ export default function Stats() {
         if (state.isGirlRatio === null || state.isGirlRatio === undefined) return;
         setIsGirlRatio(Math.floor((scorers.length + 1) % 4 / 2) === 0 ? startingWithGirlsRatio : !startingWithGirlsRatio);
     }, [scorers]);
+
+    useEffect(() => {
+        if (!ended) return;
+        async function update() {
+            await saveStat(scorers);
+            await updateDatabaseStat(scorers);
+        }
+        update();
+    }, [ended]);
 
     async function increaseScore(assister: number, scorer: number, isOurScore: boolean) {
         let tmp = [...scorers, { assist: assister, goal: scorer, isOurScore }];
@@ -41,12 +62,12 @@ export default function Stats() {
     }
 
     async function saveStat(scorersList: { assist: number, goal: number, isOurScore: boolean }[]) {
-        let savedStats: { modified: number, teamId: string, id: string, opponentName: string, startingWithGirlsRatio: boolean, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+        let savedStats: Stat[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         let filtered;
-        if (!savedStats) savedStats = [{ modified: Date.now(), opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers: scorersList, startingWithGirlsRatio }];
+        if (!savedStats) savedStats = [{ modified: Date.now(), ended: ended, opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers: scorersList, startingWithGirlsRatio }];
         else {
             filtered = savedStats.filter(s => s.id !== state.id);
-            savedStats = [...filtered, { modified: Date.now(), opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers: scorersList, startingWithGirlsRatio }]
+            savedStats = [...filtered, { modified: Date.now(), ended: ended, opponentName: state.opponentName, teamId: state.team.id, id: state.id, scorers: scorersList, startingWithGirlsRatio }]
         }
         localStorage.setItem('stats', JSON.stringify(savedStats));
     }
@@ -55,6 +76,7 @@ export default function Stats() {
         await updateDoc(doc(db, 'users', state.userId, 'teams', state.team.id, 'stats', state.id), {
             modified: Date.now(),
             scorers: scorersList,
+            ended,
         });
     }
 
@@ -97,23 +119,38 @@ export default function Stats() {
                     </div>
                 }
 
+                {!ended &&
+                    <>
+                        <div
+                            className={styles.teamContainer}
+                        >
+                            <div
+                                className={styles.easterEgg}
+                            >
+                                hi :)
+                            </div>
 
-                <div
-                    className={styles.teamContainer}
-                >
-                    <div
-                        className={styles.easterEgg}
-                    >
-                        hi :)
-                    </div>
+                            <Records
+                                onScored={increaseScore}
+                                teamName={state.team.name}
+                                opponentName={state.opponentName}
+                                players={players.concat(loanPlayers)}
+                            />
+                        </div>
+                        <div
+                            className={styles.close}
+                            onClick={() => {
+                                setEnded(true);
+                            }}
+                        >
+                            Mérkőzés lezárása
+                        </div>
 
-                    <Records
-                        onScored={increaseScore}
-                        teamName={state.team.name}
-                        opponentName={state.opponentName}
-                        players={players.concat(loanPlayers)}
-                    />
-                </div>
+                    </>
+                }
+                {ended &&
+                    <h1>A mérkőzés lezárult.</h1>
+                }
             </div>
             {showTable &&
                 <Table

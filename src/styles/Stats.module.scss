@@ -1,13 +1,5 @@
 @use 'variables' as v;
 
-.fullscreen {
-  font-size: 20px;
-  position: absolute;
-  right: 10px;
-  top: 5px;
-  cursor: pointer;
-}
-
 .container {
   padding-top: 20px;
   box-sizing: border-box;
@@ -17,6 +9,10 @@
   flex-direction: column;
   max-width: v.$maxWidth;
   width: 100%;
+}
+
+.container>h1 {
+  margin-inline: auto;
 }
 
 .teamContainer {
@@ -31,6 +27,19 @@
   display: none;
 }
 
+.close {
+  min-height: 35px;
+  display: grid;
+  place-items: center;
+  background-color: red;
+  border-radius: 10px;
+  margin-inline: 10px;
+  color: white;
+  margin-bottom: 10px;
+  box-shadow: 0px 1.5px 5px 1px grey;
+  cursor: pointer;
+}
+
 @media (pointer: fine) {
   .continueButton:hover {
     scale: 1.1;
@@ -38,6 +47,10 @@
 
   .score:hover {
     scale: 1.1;
+  }
+
+  .close:hover {
+    background-color: rgb(255, 100, 100);
   }
 }
 

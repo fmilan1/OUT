@@ -7,6 +7,7 @@ import { faCaretDown, faCaretUp, faTrash, faXmark } from '@fortawesome/free-soli
 import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Player, Team } from './Home';
+import { Stat } from './Stats';
 
 export default function New() {
 
@@ -19,7 +20,7 @@ export default function New() {
 
     const [opponentName, setOpponentName] = useState<string>('');
 
-    const [savedStats, setSavedStats] = useState<{ modified: number, id: string, teamId: string, opponentName: string, startingWithGirlsRatio: boolean, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[]>([]);
+    const [savedStats, setSavedStats] = useState<Stat[]>([]);
 
     const [assistDic, setAssistDic] = useState<{ [key: string]: number }>({});
     const [goalDic, setGoalDic] = useState<{ [key: string]: number }>({});
@@ -35,7 +36,7 @@ export default function New() {
     const [newLoanPlayerNumber, setNewLoanPlayerNumber] = useState<number>(-1);
 
     useEffect(() => {
-        const storageStats: { modified: number, id: string, teamId: string, opponentName: string, startingWithGirlsRatio: boolean, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+        const storageStats: Stat[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         const filtered = storageStats.filter(s => s.teamId === team.id);
         setSavedStats(filtered);
 
@@ -60,6 +61,7 @@ export default function New() {
                 opponentName: s.get('opponentName'),
                 teamId: team.id,
                 startingWithGirlsRatio: s.get('startingWithGirlsRatio'),
+                ended: s.get('ended'),
             }));
 
             setSavedStats([]);
@@ -318,9 +320,18 @@ export default function New() {
                         {savedStats.sort((a, b) => b.modified - a.modified).map((stat, index) => (
                             <div
                                 key={index}
-                                className={styles.stat}
+                                className={`${styles.stat} ${stat.ended ?
+                                    stat.scorers.filter(s => s.isOurScore).length > stat.scorers.filter(s => !s.isOurScore).length ?
+                                        styles.won :
+                                        stat.scorers.filter(s => s.isOurScore).length === stat.scorers.filter(s => !s.isOurScore).length ?
+                                            styles.draw :
+                                            styles.lost
+
+                                    :
+
+                                    styles.going}`}
                                 onClick={() => {
-                                    navigate('/stats', { state: { ...state, loanPlayers, opponentName: stat.opponentName, id: stat.id, scorers: stat.scorers, isGirlRatio: stat.startingWithGirlsRatio } });
+                                    navigate('/stats', { state: { ...state, ended: stat.ended, loanPlayers, opponentName: stat.opponentName, id: stat.id, scorers: stat.scorers, isGirlRatio: stat.startingWithGirlsRatio } });
                                 }}
                             >
                                 <div
@@ -340,7 +351,7 @@ export default function New() {
                                     icon={faTrash}
                                     onClick={async (e) => {
                                         e.stopPropagation();
-                                        let stats: { modified: number, id: string, teamId: string, opponentName: string, startingWithGirlsRatio: boolean, scorers: { assist: number, goal: number, isOurScore: boolean }[] }[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+                                        let stats: Stat[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
                                         stats = stats.filter(s => s.id !== stat.id);
                                         localStorage.setItem('stats', JSON.stringify(stats));
                                         stats = stats.filter(s => s.teamId === team.id);
