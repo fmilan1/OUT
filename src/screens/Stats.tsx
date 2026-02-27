@@ -150,9 +150,9 @@ export default function Stats() {
                     <div
                         className={styles.endMessageContainer}
                     >
-                        <h2>OUT</h2>
+                        <h2>{state.team.name}</h2>
                         <h2>-</h2>
-                        <h2>askdajdfbasdvks adjvshdjvas</h2>
+                        <h2>{state.opponentName}</h2>
                         <h1>A mérkőzés lezárult.</h1>
                     </div>
                 }
