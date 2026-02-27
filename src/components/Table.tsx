@@ -8,6 +8,7 @@ interface Props {
     opponentName?: string,
     onToggle: () => void,
     onDeleteLast: () => void,
+    ended: boolean,
 }
 export default function Table(props: Props) {
 
@@ -57,7 +58,7 @@ export default function Table(props: Props) {
                     }
                 </tbody>
                 <tfoot>
-                    {props.scorers.length > 0 &&
+                    {!props.ended && props.scorers.length > 0 &&
                         <tr>
                             <td
                                 className={styles.delete}

@@ -406,6 +406,15 @@ export default function New() {
                                 }
                             </tbody>
                         }
+                        <tfoot>
+                            <tr><td className={styles.empty} /></tr>
+                            <tr>
+                                <th colSpan={2}>Összesen</th>
+                                <th>{Object.values(assistDic).reduce((prev, cur) => prev + cur, 0)}</th>
+                                <th>{Object.values(goalDic).reduce((prev, cur) => prev + cur, 0)}</th>
+                                <th>{Object.values(goalDic).concat(Object.values(assistDic)).reduce((prev, cur) => prev + cur, 0)}</th>
+                            </tr>
+                        </tfoot>
                     </table>
                 </>
             }

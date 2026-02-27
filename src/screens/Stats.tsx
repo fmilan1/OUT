@@ -29,14 +29,13 @@ export default function Stats() {
     const [scorers, setScorers] = useState<{ assist: number, goal: number, isOurScore: boolean }[]>([]);
     const [isGirlRatio, setIsGirlRatio] = useState(state.isGirlRatio);
     const [startingWithGirlsRatio, _setStartingWithGirlsRatio] = useState<boolean>(state.isGirlRatio)
-    const [ended, setEnded] = useState(state.ended);
+    const [ended, setEnded] = useState(state.ended ?? false);
 
     useEffect(() => {
         setPlayers(state.team.players);
         setLoanPlayers(state.loanPlayers);
         const storageStats: Stat[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
         let thisStat = storageStats.find(s => s.id === state.id);
-        setEnded(thisStat?.ended ?? false);
         setScorers(thisStat?.scorers ?? []);
     }, []);
 
@@ -45,19 +44,11 @@ export default function Stats() {
         setIsGirlRatio(Math.floor((scorers.length + 1) % 4 / 2) === 0 ? startingWithGirlsRatio : !startingWithGirlsRatio);
     }, [scorers]);
 
-    useEffect(() => {
-        if (!ended) return;
-        async function update() {
-            await saveStat(scorers);
-            await updateDatabaseStat(scorers);
-        }
-        update();
-    }, [ended]);
-
     async function increaseScore(assister: number, scorer: number, isOurScore: boolean) {
         let tmp = [...scorers, { assist: assister, goal: scorer, isOurScore }];
         setScorers(tmp)
         saveStat(tmp);
+        console.log(tmp)
         await updateDatabaseStat(tmp);
     }
 
@@ -73,6 +64,7 @@ export default function Stats() {
     }
 
     async function updateDatabaseStat(scorersList: { assist: number, goal: number, isOurScore: boolean }[]) {
+        console.log(ended);
         await updateDoc(doc(db, 'users', state.userId, 'teams', state.team.id, 'stats', state.id), {
             modified: Date.now(),
             scorers: scorersList,
@@ -107,7 +99,7 @@ export default function Stats() {
                     <span>-</span>
                     {scorers.filter(s => !s.isOurScore).length}
                 </div>
-                {isGirlRatio !== null && isGirlRatio !== undefined &&
+                {!ended && isGirlRatio !== null && isGirlRatio !== undefined &&
                     <div
                         className={styles.ratio}
                     >
@@ -139,10 +131,14 @@ export default function Stats() {
                         </div>
                         <div
                             className={styles.close}
-                            onClick={() => {
+                            onClick={async () => {
                                 if (confirm("Biztosan le akarja zárni a mérkőzést?") === true) {
                                     setEnded(true);
+                                    await updateDoc(doc(db, 'users', state.userId, 'teams', state.team.id, 'stats', state.id), {
+                                        ended: true,
+                                    });
                                 }
+
                             }}
                         >
                             Mérkőzés lezárása
@@ -151,7 +147,14 @@ export default function Stats() {
                     </>
                 }
                 {ended &&
-                    <h1>A mérkőzés lezárult.</h1>
+                    <div
+                        className={styles.endMessageContainer}
+                    >
+                        <h2>OUT</h2>
+                        <h2>-</h2>
+                        <h2>askdajdfbasdvks adjvshdjvas</h2>
+                        <h1>A mérkőzés lezárult.</h1>
+                    </div>
                 }
             </div>
             {showTable &&
@@ -161,6 +164,7 @@ export default function Stats() {
                     opponentName={state.opponentName}
                     scorers={scorers}
                     onDeleteLast={deleteLast}
+                    ended={ended}
                 />
             }
         </>

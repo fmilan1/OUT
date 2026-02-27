@@ -11,10 +11,6 @@
   width: 100%;
 }
 
-.container>h1 {
-  margin-inline: auto;
-}
-
 .teamContainer {
   padding: 10px;
   overflow-x: scroll;
@@ -38,6 +34,24 @@
   margin-bottom: 10px;
   box-shadow: 0px 1.5px 5px 1px grey;
   cursor: pointer;
+}
+
+.endMessageContainer {
+  display: grid;
+  grid-template-columns: 1fr 0.2fr 1fr;
+  justify-items: center;
+
+  &>h2:first-child {
+    justify-self: right;
+  }
+
+  &>h2:nth-child(3) {
+    justify-self: left;
+  }
+
+  &>h1 {
+    grid-column: 1/4;
+  }
 }
 
 @media (pointer: fine) {

@@ -135,6 +135,11 @@
   font-weight: 900;
 }
 
+.empty {
+  border: none;
+  height: 10px;
+}
+
 .ratioContainer>input {
   transform: translateY(2px);
 }
