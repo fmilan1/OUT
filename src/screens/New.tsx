@@ -172,6 +172,7 @@ export default function New() {
                                         className={styles.XmarkLoanPlayer}
                                         onClick={async (e) => {
                                             e.stopPropagation();
+                                            if (!confirm(`Biztos törölni szeretné #${player.number} ${player.name} kölcsönjátékost?`)) return;
                                             const loanPlayerRef = doc(db, 'users', state.userId, 'teams', team.id, 'loanPlayers', `${player.number}`);
                                             setLoanPlayers(prev => {
                                                 let tmp = [];
@@ -351,6 +352,7 @@ export default function New() {
                                     icon={faTrash}
                                     onClick={async (e) => {
                                         e.stopPropagation();
+                                        if (!confirm(`Biztos törölni szeretné a(z) ${stat.opponentName} elleni jegyzőkönyvet?`)) return;
                                         let stats: Stat[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
                                         stats = stats.filter(s => s.id !== stat.id);
                                         localStorage.setItem('stats', JSON.stringify(stats));

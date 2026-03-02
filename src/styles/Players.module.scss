@@ -5,7 +5,7 @@
     transition: .2s;
   }
 
-  .player:not(:nth-last-child(1 of .player)):hover {
+  .player:not(:nth-child(1 of .player)):hover {
     background-color: rgb(255, 49, 84);
     color: white;
     text-decoration: line-through;
@@ -27,12 +27,12 @@
   text-align: right;
 }
 
-:nth-last-child(1 of .player)::before {
+:nth-child(1 of .player)::before {
   content: '#';
   position: absolute;
 }
 
-.player:last-child:has(.wrong)::before {
+.player:has(.wrong):before {
   color: var(--red);
 }
 

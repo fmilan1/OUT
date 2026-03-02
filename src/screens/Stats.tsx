@@ -48,7 +48,6 @@ export default function Stats() {
         let tmp = [...scorers, { assist: assister, goal: scorer, isOurScore }];
         setScorers(tmp)
         saveStat(tmp);
-        console.log(tmp)
         await updateDatabaseStat(tmp);
     }
 
@@ -64,7 +63,6 @@ export default function Stats() {
     }
 
     async function updateDatabaseStat(scorersList: { assist: number, goal: number, isOurScore: boolean }[]) {
-        console.log(ended);
         await updateDoc(doc(db, 'users', state.userId, 'teams', state.team.id, 'stats', state.id), {
             modified: Date.now(),
             scorers: scorersList,

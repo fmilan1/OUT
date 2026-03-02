@@ -39,39 +39,6 @@ export default function Players() {
             className={styles.container}
         >
             <h1>Játékosok</h1>
-            {players?.sort((a, b) => a.number - b.number).map((p, index) => (
-                <div
-                    className={`${styles.player} player`}
-                    key={index}
-                    onClick={async () => {
-                        let teams: { name: string, id: string, players: { name: string, number: number }[] }[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
-                        let tmp: { name: string, id: string, players: { name: string, number: number }[] }[] = [];
-                        teams.forEach(t => {
-                            if (t.players.map(p1 => p1.number).includes(p.number)) {
-                                tmp.push({ ...t, players: t.players.filter(p1 => p.number !== p1.number) });
-                            }
-                            else tmp.push(t);
-                        });
-                        localStorage.setItem('teams', JSON.stringify(tmp));
-                        setPlayers(players.filter(p1 => p1.number !== p.number));
-                        const playerRef = doc(db, 'users', state.userId, 'players', p.number.toString());
-                        await deleteDoc(playerRef);
-                        const teamsRef = collection(db, 'users', state.userId, 'teams');
-                        const teamsSnap = await getDocs(teamsRef);
-                        teamsSnap.forEach(async t => {
-                            const playersRef = collection(db, teamsRef.path, t.id.toString(), 'players');
-                            const playersSnap = await getDocs(playersRef);
-                            playersSnap.forEach(async player => {
-                                if (player.id === p.number.toString()) await deleteDoc(player.ref);
-                            })
-                        })
-                        setDeletedPlayersStack([...deletedPlayersStack, p]);
-                    }}
-                >
-                    <span>{p.number}</span>
-                    <span>{p.name}</span>
-                </div>
-            ))}
             <form
                 className={`${styles.player} player`}
             >
@@ -113,6 +80,40 @@ export default function Players() {
                     >Hozzáadás</button>
                 }
             </form>
+            {players?.sort((a, b) => a.number - b.number).map((p, index) => (
+                <div
+                    className={`${styles.player} player`}
+                    key={index}
+                    onClick={async () => {
+                        if (!confirm(`Biztos törölni szeretné #${p.number} ${p.name} játékost?`)) return;
+                        let teams: { name: string, id: string, players: { name: string, number: number }[] }[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
+                        let tmp: { name: string, id: string, players: { name: string, number: number }[] }[] = [];
+                        teams.forEach(t => {
+                            if (t.players.map(p1 => p1.number).includes(p.number)) {
+                                tmp.push({ ...t, players: t.players.filter(p1 => p.number !== p1.number) });
+                            }
+                            else tmp.push(t);
+                        });
+                        localStorage.setItem('teams', JSON.stringify(tmp));
+                        setPlayers(players.filter(p1 => p1.number !== p.number));
+                        const playerRef = doc(db, 'users', state.userId, 'players', p.number.toString());
+                        await deleteDoc(playerRef);
+                        const teamsRef = collection(db, 'users', state.userId, 'teams');
+                        const teamsSnap = await getDocs(teamsRef);
+                        teamsSnap.forEach(async t => {
+                            const playersRef = collection(db, teamsRef.path, t.id.toString(), 'players');
+                            const playersSnap = await getDocs(playersRef);
+                            playersSnap.forEach(async player => {
+                                if (player.id === p.number.toString()) await deleteDoc(player.ref);
+                            })
+                        })
+                        setDeletedPlayersStack([...deletedPlayersStack, p]);
+                    }}
+                >
+                    <span>{p.number}</span>
+                    <span>{p.name}</span>
+                </div>
+            ))}
             {deletedPlayersStack.length > 0 &&
                 <button
                     className='button'
