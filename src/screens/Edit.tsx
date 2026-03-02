@@ -79,7 +79,7 @@ export default function Edit() {
             <button
                 className={`${styles.delete} button`}
                 onClick={async () => {
-                    if (!confirm(`Biztos törölni szeretné a(z) ${team.name} nevű csapatot?`)) return;
+                    if (!confirm(`Biztos törölni szeretné a(z) ${team.name} csapatot?`)) return;
                     let savedTeams: { players: { name: string, number: number }[], name: string, id: string }[] = JSON.parse(localStorage.getItem('teams') ?? '');
                     let filtered;
                     if (!savedTeams) savedTeams = [team];
