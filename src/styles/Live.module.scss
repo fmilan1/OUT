@@ -1,0 +1,72 @@
+.container {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.red {
+  --color: red;
+}
+
+.green {
+  --color: rgb(0, 255, 100);
+}
+
+.stat {
+  max-width: 500px;
+  width: 100%;
+  border-radius: 10px;
+  border: 3px solid black;
+  padding-left: 10px;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;;
+  justify-items: center;
+  align-items: center;
+  writing-mode: sideways-lr;
+  background-color: var(--color);
+  overflow: hidden;
+  color: white;
+}
+
+.inner {
+  border: 3px solid black;
+  margin: -3px;
+  color: black;
+  font-size: 20px;
+  writing-mode: horizontal-tb;
+  display: grid;
+  margin-left: 10px;
+  border-radius: 10px 0 0 10px;
+  box-sizing: border-box;
+  background-color: white;
+  padding: 10px;
+  grid-template-columns: 20% 60% 20%;
+  place-items: center;
+  width: 100%;
+}
+
+.stat.green::before {
+  content: 'ÉLŐ';
+}
+
+.stat.red::before {
+  content: 'VÉGE';
+}
+
+
+.status {
+  width: 100%;
+  height: 100%;
+}
+
+.scores {
+  align-self: center;
+  justify-self: center;
+  font-size: 80px;
+  gap: 10px;
+  display: flex;
+}

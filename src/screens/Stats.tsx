@@ -9,6 +9,8 @@ import {
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Player } from './Home';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUpFromBracket, faEllipsis } from '@fortawesome/free-solid-svg-icons';
 
 export interface Stat {
     id: string,
@@ -84,8 +86,33 @@ export default function Stats() {
         await updateDatabaseStat(tmp);
     }
 
+    const [sharing, setSharing] = useState(false);
+    function shareModal(teamID: string) {
+        return (
+            <div
+                className={styles.shareModal}
+            >
+                <div>
+                    <span>Online követés: </span>
+                    <span>{window.location.origin}/live?{teamID}</span>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <>
+            <FontAwesomeIcon
+                className={styles.shareBtn}
+                icon={faArrowUpFromBracket}
+                onClick={() => {
+                    console.log(state);
+                    setSharing(true);
+                }}
+            />
+            {sharing &&
+                shareModal(state.team.id)
+            }
             <div
                 className={styles.container}
             >
