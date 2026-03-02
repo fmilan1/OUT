@@ -91,10 +91,13 @@ export default function Stats() {
         return (
             <div
                 className={styles.shareModal}
+                onClick={() => setSharing(false)}
             >
-                <div>
+                <div
+                    onClick={(e) => e.stopPropagation()}
+                >
                     <span>Online követés: </span>
-                    <span>{window.location.origin}/live?{teamID}</span>
+                    <a href={`${window.location.origin}/live?${teamID}`} target='_blank'>{window.location.origin}/live?{teamID}</a>
                 </div>
             </div>
         )
