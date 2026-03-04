@@ -6,36 +6,73 @@
   align-items: center;
 }
 
-.red {
-  --color: red;
-}
-
-.green {
-  --color: rgb(0, 255, 100);
-}
-
 .stat {
   max-width: 500px;
   width: 100%;
   border-radius: 10px;
-  border: 3px solid black;
+  border: 3px solid var(--color);
   padding-left: 10px;
   box-sizing: border-box;
   position: relative;
   display: flex;
-  flex-direction: column;;
+  flex-direction: column;
   justify-items: center;
   align-items: center;
   writing-mode: sideways-lr;
-  background-color: var(--color);
+  background-color: var(--bgcolor);
   overflow: hidden;
   color: white;
+  cursor: pointer;
+  transition: 0.2s box-shadow;
+  color: var(--color);
+}
+
+@media (pointer: fine) {
+  .stat:hover {
+    box-shadow: 0 0 5px 2px;
+  }
+}
+
+.stat.win::before {
+  content: 'NYERT';
+}
+
+.stat.lose::before {
+  content: 'VESZTETT';
+}
+
+.stat.draw::before {
+  content: 'DÖNTETLEN';
+}
+
+.stat.live::before {
+  content: 'ÉLŐ';
+}
+
+.stat.live {
+  --color: grey;
+  --bgcolor: lightgrey;
+}
+
+.stat.lose {
+  --bgcolor: red;
+  --color: darkred;
+}
+
+.stat.win {
+  --bgcolor: rgb(0, 255, 100);
+  --color: green;
+}
+
+.stat.draw {
+  --bgcolor: yellow;
+  --color: darkkhaki;
 }
 
 .inner {
-  border: 3px solid black;
-  margin: -3px;
+  border: 3px solid var(--color);
   color: black;
+  margin: -3px;
   font-size: 20px;
   writing-mode: horizontal-tb;
   display: grid;
@@ -48,15 +85,6 @@
   place-items: center;
   width: 100%;
 }
-
-.stat.green::before {
-  content: 'ÉLŐ';
-}
-
-.stat.red::before {
-  content: 'VÉGE';
-}
-
 
 .status {
   width: 100%;

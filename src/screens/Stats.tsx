@@ -87,7 +87,7 @@ export default function Stats() {
     }
 
     const [sharing, setSharing] = useState(false);
-    function shareModal(teamID: string) {
+    function shareModal() {
         return (
             <div
                 className={styles.shareModal}
@@ -97,7 +97,7 @@ export default function Stats() {
                     onClick={(e) => e.stopPropagation()}
                 >
                     <span>Online követés: </span>
-                    <a href={`${window.location.origin}/live?${teamID}`} target='_blank'>{window.location.origin}/live?{teamID}</a>
+                    <a href={`${window.location.origin}/live/stat?${state.id}`} target='_blank'>{window.location.origin}/live/stat?{state.id}</a>
                 </div>
             </div>
         )
@@ -114,7 +114,7 @@ export default function Stats() {
                 }}
             />
             {sharing &&
-                shareModal(state.team.id)
+                shareModal()
             }
             <div
                 className={styles.container}
