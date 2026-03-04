@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { db } from "../firebase";
 import styles from '../styles/LiveStat.module.scss';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRightLong, faCaretLeft, faChevronLeft, faCross, faCrosshairs, faSkullCrossbones, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightLong, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { Player } from "./Home";
 import { useNavigate } from "react-router";
 
