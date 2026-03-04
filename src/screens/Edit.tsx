@@ -138,6 +138,7 @@ export default function Edit() {
                         setChanged(false);
                         const teamRef = doc(db, 'users', state.userId, 'teams', team.id.toString());
                         await setDoc(teamRef, {
+                            id: team.id,
                             name: team.name,
                             tournament: team.tournament,
                             year,

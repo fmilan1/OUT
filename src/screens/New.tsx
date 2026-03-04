@@ -255,6 +255,7 @@ export default function New() {
                         navigate('/stats', { state: { ...state, loanPlayers, opponentName: opponentName, id: newUid, isGirlRatio: showRatioOptions ? isGirlRatio : null } });
                         const statRef = doc(db, 'users', state.userId, 'teams', team.id, 'stats', newUid);
                         await setDoc(statRef, {
+                            id: newUid,
                             opponentName,
                             teamId: team.id,
                             scorers: [],
