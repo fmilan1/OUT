@@ -3,7 +3,7 @@ import styles from '../styles/New.module.scss';
 import { useLocation, useNavigate } from 'react-router';
 import { uid } from 'uid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpFromBracket, faCaretDown, faCaretUp, faShare, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpFromBracket, faCaretDown, faCaretUp, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Player, Team } from './Home';
