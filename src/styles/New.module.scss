@@ -28,6 +28,15 @@
   text-wrap: nowrap;
 }
 
+.shareBtn {
+  position: absolute;
+  margin: 10px;
+  right: 0;
+  cursor: pointer;
+  scale: 1.5;
+  z-index: 200;
+}
+
 .score {
   display: grid;
   font-size: 60px;

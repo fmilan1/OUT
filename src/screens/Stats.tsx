@@ -10,7 +10,8 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Player } from './Home';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpFromBracket, faCopy } from '@fortawesome/free-solid-svg-icons';
+import ShareModal from '../components/ShareModal';
 
 export interface Stat {
     id: string,
@@ -87,21 +88,6 @@ export default function Stats() {
     }
 
     const [sharing, setSharing] = useState(false);
-    function shareModal() {
-        return (
-            <div
-                className={styles.shareModal}
-                onClick={() => setSharing(false)}
-            >
-                <div
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <span>Online követés: </span>
-                    <a href={`${window.location.origin}/live/stat?${state.id}`} target='_blank'>{window.location.origin}/live/stat?{state.id}</a>
-                </div>
-            </div>
-        )
-    }
 
     return (
         <>
@@ -109,12 +95,14 @@ export default function Stats() {
                 className={styles.shareBtn}
                 icon={faArrowUpFromBracket}
                 onClick={() => {
-                    console.log(state);
                     setSharing(true);
                 }}
             />
             {sharing &&
-                shareModal()
+                <ShareModal
+                    hide={() => setSharing(false)}
+                    url={`${window.location.origin}/live/stat?${state.id}`}
+                />
             }
             <div
                 className={styles.container}
@@ -185,7 +173,8 @@ export default function Stats() {
                     </div>
                 }
             </div>
-            {showTable &&
+            {
+                showTable &&
                 <Table
                     onToggle={() => setShowTable(!showTable)}
                     teamName={state.team.name}

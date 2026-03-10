@@ -3,11 +3,12 @@ import styles from '../styles/New.module.scss';
 import { useLocation, useNavigate } from 'react-router';
 import { uid } from 'uid';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faCaretUp, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpFromBracket, faCaretDown, faCaretUp, faShare, faTrash, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Player, Team } from './Home';
 import { Stat } from './Stats';
+import ShareModal from '../components/ShareModal';
 
 export default function New() {
 
@@ -34,6 +35,8 @@ export default function New() {
     const [newLoanPlayer, setNewLoanPlayer] = useState(false);
     const [newLoanPlayerName, setNewLoanPlayerName] = useState('');
     const [newLoanPlayerNumber, setNewLoanPlayerNumber] = useState<number>(-1);
+
+    const [sharing, setSharing] = useState(false);
 
     useEffect(() => {
         const storageStats: Stat[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
@@ -114,313 +117,326 @@ export default function New() {
     }, [savedStats])
 
     return (
-        <div
-            className={styles.container}
-        >
-            <div>
-                <h1>{team.name}</h1>
-                <h2>{team.tournament}</h2>
-            </div>
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: 'center',
-                    gap: 10,
-                }}
-            >
-                <h2
-                    onClick={() => setCollapsePlayers(!collapsePlayers)}
-                    style={{
-                        cursor: 'pointer',
-                    }}
-                >Játékosok</h2>
-                <FontAwesomeIcon
-                    icon={collapsePlayers ? faCaretDown : faCaretUp}
-                    onClick={() => setCollapsePlayers(!collapsePlayers)}
-                    style={{
-                        cursor: 'pointer',
-                        position: 'relative',
-                        top: 2,
-                    }}
+        <>
+            <FontAwesomeIcon
+                className={styles.shareBtn}
+                icon={faArrowUpFromBracket}
+                onClick={() => setSharing(true)}
+            />
+            {sharing &&
+                <ShareModal
+                    hide={() => setSharing(false)}
+                    url={`${window.location.origin}/live?${state.team.id}`}
                 />
-            </div>
-            {!collapsePlayers &&
-                <>
-                    {players.sort((a, b) => a.number - b.number).map((player, index) => (
-                        <div
-                            key={index}
-                            className={`${styles.player} player`}
-                            onClick={() => { navigate('/player', { state: { player, stats: savedStats } }) }}
-                        >
-                            <span>{player.number}</span>
-                            <span>{player.name}</span>
-                        </div>
-                    ))}
-                    {loanPlayers?.length > 0 &&
-                        <>
-                            <h3>Kölcsönjátékosok</h3>
-                            {loanPlayers.sort((a, b) => a.number - b.number).map((player, index) => (
-                                <div
-                                    key={index}
-                                    className={`${styles.player} player`}
-                                    onClick={() => { navigate('/player', { state: { player, stats: savedStats } }) }}
-                                >
-                                    <span>{player.number}</span>
-                                    <span>{player.name}</span>
-                                    <FontAwesomeIcon
-                                        icon={faXmark}
-                                        className={styles.XmarkLoanPlayer}
-                                        onClick={async (e) => {
-                                            e.stopPropagation();
-                                            if (!confirm(`Biztos törölni szeretné #${player.number} ${player.name} kölcsönjátékost?`)) return;
-                                            const loanPlayerRef = doc(db, 'users', state.userId, 'teams', team.id, 'loanPlayers', `${player.number}`);
-                                            setLoanPlayers(prev => {
-                                                let tmp = [];
-                                                tmp = prev.filter(p => p.number != player.number);
-                                                return [...tmp];
-                                            });
-                                            await deleteDoc(loanPlayerRef);
-                                        }}
-                                    />
-                                </div>
-                            ))}
-                        </>
-                    }
-                    <button
-                        className='button'
-                        onClick={() => {
-                            setNewLoanPlayer(!newLoanPlayer);
-                        }}
-                    >{!newLoanPlayer ? 'Kölcsönjátékos felvétele' : 'Mégsem'}</button>
-                    {newLoanPlayer &&
-                        <form
-                            className='player'
-                            style={{
-                                marginTop: 15,
-                            }}
-                        >
-                            <div
-                                className={styles.newLoanPlayer}
-                            >
-                                <input
-                                    required
-                                    type='number'
-                                    inputMode='numeric'
-                                    onChange={(e) => setNewLoanPlayerNumber(e.target.value.length > 2 ? newLoanPlayerNumber : parseInt(e.target.value))}
-                                    value={newLoanPlayerNumber < 0 ? '' : newLoanPlayerNumber}
-                                    className={styles.input}
-                                    onKeyDown={(e) => {
-                                        if (!players.map(p => p.number).includes(newLoanPlayerNumber) && e.key === 'Enter') {
-                                            const form = document.forms[0].elements[1] as HTMLInputElement;
-                                            form.focus();
-                                        }
-                                    }}
-                                />
-                                <input
-                                    className={styles.input}
-                                    onChange={(e) => setNewLoanPlayerName(e.target.value)}
-                                    value={newLoanPlayerName}
-                                />
-                                {newLoanPlayerNumber >= 0 && newLoanPlayerName !== '' &&
-                                    <button
-                                        className='button'
-                                        onClick={async () => {
-                                            setLoanPlayers([...loanPlayers, {
-                                                name: newLoanPlayerName,
-                                                number: newLoanPlayerNumber,
-                                            }]);
-                                            setNewLoanPlayerName('');
-                                            setNewLoanPlayerNumber(-1);
-                                            const firstInput = document.forms[0].elements[0] as HTMLInputElement;
-                                            firstInput.focus();
-                                            const newLoanPlayerRef = doc(db, 'users', state.userId, 'teams', team.id, 'loanPlayers', newLoanPlayerNumber.toString());
-                                            await setDoc(newLoanPlayerRef, {
-                                                name: newLoanPlayerName,
-                                            })
-                                        }}
-                                        style={{ margin: 0 }}
-                                    >Hozzáadás</button>
-                                }
-                            </div>
-                        </form>
-                    }
-                </>
             }
-            <h2>Ellenfél</h2>
-            <form
-                onSubmit={async (e) => {
-                    e.preventDefault();
-                    if (e.currentTarget.checkValidity()) {
-                        const newUid = uid();
-                        navigate('/stats', { state: { ...state, loanPlayers, opponentName: opponentName, id: newUid, isGirlRatio: showRatioOptions ? isGirlRatio : null } });
-                        const statRef = doc(db, 'users', state.userId, 'teams', team.id, 'stats', newUid);
-                        await setDoc(statRef, {
-                            id: newUid,
-                            opponentName,
-                            teamId: team.id,
-                            scorers: [],
-                            modified: Date.now(),
-                            startingWithGirlsRatio: showRatioOptions ? isGirlRatio : null,
-                        });
-                    }
-
-                    else e.currentTarget.reportValidity();
-                }}
+            <div
+                className={styles.container}
             >
-                <input
-                    required
-                    type="text"
-                    placeholder='Csapatnév'
-                    onChange={(e) => setOpponentName(e.target.value)}
-                />
-                <div
-                    className={styles.ratioContainer}
-                >
-                    <br />
-                    <input
-                        type='checkbox'
-                        id='ratio-checkbox'
-                        onChange={() => setShowRatioOptions(!showRatioOptions)}
-                    />
-                    <label htmlFor='ratio-checkbox'>Nemek arányának követése</label>
-                    {showRatioOptions &&
-                        <>
-                            <h3>Kezdés</h3>
-                            <input
-                                type='radio'
-                                id='girl'
-                                name='ratio'
-                                onChange={() => setIsGirlRatio(true)}
-                                defaultChecked
-                            />
-                            <label htmlFor='girl'>3 fiú - 4 lány</label>
-                            <br />
-                            <input
-                                type='radio'
-                                id='boy'
-                                name='ratio'
-                                onChange={() => setIsGirlRatio(false)}
-                            />
-                            <label htmlFor='boy'>4 fiú - 3 lány</label>
-                        </>
-                    }
+                <div>
+                    <h1>{team.name}</h1>
+                    <h2>{team.tournament}</h2>
                 </div>
-                <br />
-                <button
-                    className='button'
-                >Új jegyzőkönyv indítása</button>
-
-            </form>
-            {savedStats.length > 0 &&
-                <>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: 'center',
+                        gap: 10,
+                    }}
+                >
                     <h2
-                        className={styles.h2}
-                    >Legutóbbi jegyzőkönyvek</h2>
-                    <div
-                        className={styles.savedStatsContainer}
-                    >
-                        {savedStats.sort((a, b) => b.modified - a.modified).map((stat, index) => (
+                        onClick={() => setCollapsePlayers(!collapsePlayers)}
+                        style={{
+                            cursor: 'pointer',
+                        }}
+                    >Játékosok</h2>
+                    <FontAwesomeIcon
+                        icon={collapsePlayers ? faCaretDown : faCaretUp}
+                        onClick={() => setCollapsePlayers(!collapsePlayers)}
+                        style={{
+                            cursor: 'pointer',
+                            position: 'relative',
+                            top: 2,
+                        }}
+                    />
+                </div>
+                {!collapsePlayers &&
+                    <>
+                        {players.sort((a, b) => a.number - b.number).map((player, index) => (
                             <div
                                 key={index}
-                                className={`${styles.stat} ${stat.ended ?
-                                    stat.scorers.filter(s => s.isOurScore).length > stat.scorers.filter(s => !s.isOurScore).length ?
-                                        styles.won :
-                                        stat.scorers.filter(s => s.isOurScore).length === stat.scorers.filter(s => !s.isOurScore).length ?
-                                            styles.draw :
-                                            styles.lost
-
-                                    :
-
-                                    styles.going}`}
-                                onClick={() => {
-                                    navigate('/stats', { state: { ...state, ended: stat.ended, loanPlayers, opponentName: stat.opponentName, id: stat.id, scorers: stat.scorers, isGirlRatio: stat.startingWithGirlsRatio } });
+                                className={`${styles.player} player`}
+                                onClick={() => { navigate('/player', { state: { player, stats: savedStats } }) }}
+                            >
+                                <span>{player.number}</span>
+                                <span>{player.name}</span>
+                            </div>
+                        ))}
+                        {loanPlayers?.length > 0 &&
+                            <>
+                                <h3>Kölcsönjátékosok</h3>
+                                {loanPlayers.sort((a, b) => a.number - b.number).map((player, index) => (
+                                    <div
+                                        key={index}
+                                        className={`${styles.player} player`}
+                                        onClick={() => { navigate('/player', { state: { player, stats: savedStats } }) }}
+                                    >
+                                        <span>{player.number}</span>
+                                        <span>{player.name}</span>
+                                        <FontAwesomeIcon
+                                            icon={faXmark}
+                                            className={styles.XmarkLoanPlayer}
+                                            onClick={async (e) => {
+                                                e.stopPropagation();
+                                                if (!confirm(`Biztos törölni szeretné #${player.number} ${player.name} kölcsönjátékost?`)) return;
+                                                const loanPlayerRef = doc(db, 'users', state.userId, 'teams', team.id, 'loanPlayers', `${player.number}`);
+                                                setLoanPlayers(prev => {
+                                                    let tmp = [];
+                                                    tmp = prev.filter(p => p.number != player.number);
+                                                    return [...tmp];
+                                                });
+                                                await deleteDoc(loanPlayerRef);
+                                            }}
+                                        />
+                                    </div>
+                                ))}
+                            </>
+                        }
+                        <button
+                            className='button'
+                            onClick={() => {
+                                setNewLoanPlayer(!newLoanPlayer);
+                            }}
+                        >{!newLoanPlayer ? 'Kölcsönjátékos felvétele' : 'Mégsem'}</button>
+                        {newLoanPlayer &&
+                            <form
+                                className='player'
+                                style={{
+                                    marginTop: 15,
                                 }}
                             >
                                 <div
-                                    className={styles.score}
+                                    className={styles.newLoanPlayer}
                                 >
-                                    <div>
-                                        {stat.scorers.filter(s => s.isOurScore).length}
-                                    </div>
-                                    <div>-</div>
-                                    <div>
-                                        {stat.scorers.filter(s => !s.isOurScore).length}
-                                    </div>
+                                    <input
+                                        required
+                                        type='number'
+                                        inputMode='numeric'
+                                        onChange={(e) => setNewLoanPlayerNumber(e.target.value.length > 2 ? newLoanPlayerNumber : parseInt(e.target.value))}
+                                        value={newLoanPlayerNumber < 0 ? '' : newLoanPlayerNumber}
+                                        className={styles.input}
+                                        onKeyDown={(e) => {
+                                            if (!players.map(p => p.number).includes(newLoanPlayerNumber) && e.key === 'Enter') {
+                                                const form = document.forms[0].elements[1] as HTMLInputElement;
+                                                form.focus();
+                                            }
+                                        }}
+                                    />
+                                    <input
+                                        className={styles.input}
+                                        onChange={(e) => setNewLoanPlayerName(e.target.value)}
+                                        value={newLoanPlayerName}
+                                    />
+                                    {newLoanPlayerNumber >= 0 && newLoanPlayerName !== '' &&
+                                        <button
+                                            className='button'
+                                            onClick={async () => {
+                                                setLoanPlayers([...loanPlayers, {
+                                                    name: newLoanPlayerName,
+                                                    number: newLoanPlayerNumber,
+                                                }]);
+                                                setNewLoanPlayerName('');
+                                                setNewLoanPlayerNumber(-1);
+                                                const firstInput = document.forms[0].elements[0] as HTMLInputElement;
+                                                firstInput.focus();
+                                                const newLoanPlayerRef = doc(db, 'users', state.userId, 'teams', team.id, 'loanPlayers', newLoanPlayerNumber.toString());
+                                                await setDoc(newLoanPlayerRef, {
+                                                    name: newLoanPlayerName,
+                                                })
+                                            }}
+                                            style={{ margin: 0 }}
+                                        >Hozzáadás</button>
+                                    }
                                 </div>
-
-                                <FontAwesomeIcon
-                                    className={styles.icon}
-                                    icon={faTrash}
-                                    onClick={async (e) => {
-                                        e.stopPropagation();
-                                        if (!confirm(`Biztos törölni szeretné a(z) ${stat.opponentName} elleni jegyzőkönyvet?`)) return;
-                                        let stats: Stat[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
-                                        stats = stats.filter(s => s.id !== stat.id);
-                                        localStorage.setItem('stats', JSON.stringify(stats));
-                                        stats = stats.filter(s => s.teamId === team.id);
-                                        setSavedStats(stats);
-                                        await deleteDoc(doc(db, 'users', state.userId, 'teams', team.id, 'stats', stat.id));
-                                    }}
-                                />
-                                <div
-                                    className={styles.opponentName}
-                                >{stat.opponentName}</div>
-                            </div>
-                        ))}
-                    </div>
-                    <h2>Kanadai táblázat</h2>
-                    <table
-                        className={styles.table}
-                    >
-                        <thead>
-                            <tr>
-                                <th>
-                                    #
-                                </th>
-                                <th>
-                                    Név
-                                </th>
-                                <th>
-                                    Assziszt
-                                </th>
-                                <th>
-                                    Pont
-                                </th>
-                                <th>
-                                    Összesen
-                                </th>
-                            </tr>
-                        </thead>
-                        {
-                            <tbody>
-                                {
-                                    tablePlayers.sort((a, b) =>
-                                        ((goalDic[b.number] ?? 0) + (assistDic[b.number] ?? 0)) -
-                                        ((goalDic[a.number] ?? 0) + (assistDic[a.number] ?? 0))
-                                    ).map((tp, index) => (
-                                        <tr key={index}>
-                                            <td>{tp.number}</td>
-                                            <td>{tp.name}</td>
-                                            <td>{assistDic[tp.number]}</td>
-                                            <td>{goalDic[tp.number]}</td>
-                                            <td>{assistDic[tp.number] + goalDic[tp.number]}</td>
-                                        </tr>
-                                    ))
-                                }
-                            </tbody>
+                            </form>
                         }
-                        <tfoot>
-                            <tr><td className={styles.empty} /></tr>
-                            <tr>
-                                <th colSpan={2}>Összesen</th>
-                                <th>{Object.values(assistDic).reduce((prev, cur) => prev + cur, 0)}</th>
-                                <th>{Object.values(goalDic).reduce((prev, cur) => prev + cur, 0)}</th>
-                                <th>{Object.values(goalDic).concat(Object.values(assistDic)).reduce((prev, cur) => prev + cur, 0)}</th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </>
-            }
-        </div >
+                    </>
+                }
+                <h2>Ellenfél</h2>
+                <form
+                    onSubmit={async (e) => {
+                        e.preventDefault();
+                        if (e.currentTarget.checkValidity()) {
+                            const newUid = uid();
+                            navigate('/stats', { state: { ...state, loanPlayers, opponentName: opponentName, id: newUid, isGirlRatio: showRatioOptions ? isGirlRatio : null } });
+                            const statRef = doc(db, 'users', state.userId, 'teams', team.id, 'stats', newUid);
+                            await setDoc(statRef, {
+                                id: newUid,
+                                opponentName,
+                                teamId: team.id,
+                                scorers: [],
+                                modified: Date.now(),
+                                startingWithGirlsRatio: showRatioOptions ? isGirlRatio : null,
+                            });
+                        }
+
+                        else e.currentTarget.reportValidity();
+                    }}
+                >
+                    <input
+                        required
+                        type="text"
+                        placeholder='Csapatnév'
+                        onChange={(e) => setOpponentName(e.target.value)}
+                    />
+                    <div
+                        className={styles.ratioContainer}
+                    >
+                        <br />
+                        <input
+                            type='checkbox'
+                            id='ratio-checkbox'
+                            onChange={() => setShowRatioOptions(!showRatioOptions)}
+                        />
+                        <label htmlFor='ratio-checkbox'>Nemek arányának követése</label>
+                        {showRatioOptions &&
+                            <>
+                                <h3>Kezdés</h3>
+                                <input
+                                    type='radio'
+                                    id='girl'
+                                    name='ratio'
+                                    onChange={() => setIsGirlRatio(true)}
+                                    defaultChecked
+                                />
+                                <label htmlFor='girl'>3 fiú - 4 lány</label>
+                                <br />
+                                <input
+                                    type='radio'
+                                    id='boy'
+                                    name='ratio'
+                                    onChange={() => setIsGirlRatio(false)}
+                                />
+                                <label htmlFor='boy'>4 fiú - 3 lány</label>
+                            </>
+                        }
+                    </div>
+                    <br />
+                    <button
+                        className='button'
+                    >Új jegyzőkönyv indítása</button>
+
+                </form>
+                {savedStats.length > 0 &&
+                    <>
+                        <h2
+                            className={styles.h2}
+                        >Legutóbbi jegyzőkönyvek</h2>
+                        <div
+                            className={styles.savedStatsContainer}
+                        >
+                            {savedStats.sort((a, b) => b.modified - a.modified).map((stat, index) => (
+                                <div
+                                    key={index}
+                                    className={`${styles.stat} ${stat.ended ?
+                                        stat.scorers.filter(s => s.isOurScore).length > stat.scorers.filter(s => !s.isOurScore).length ?
+                                            styles.won :
+                                            stat.scorers.filter(s => s.isOurScore).length === stat.scorers.filter(s => !s.isOurScore).length ?
+                                                styles.draw :
+                                                styles.lost
+
+                                        :
+
+                                        styles.going}`}
+                                    onClick={() => {
+                                        navigate('/stats', { state: { ...state, ended: stat.ended, loanPlayers, opponentName: stat.opponentName, id: stat.id, scorers: stat.scorers, isGirlRatio: stat.startingWithGirlsRatio } });
+                                    }}
+                                >
+                                    <div
+                                        className={styles.score}
+                                    >
+                                        <div>
+                                            {stat.scorers.filter(s => s.isOurScore).length}
+                                        </div>
+                                        <div>-</div>
+                                        <div>
+                                            {stat.scorers.filter(s => !s.isOurScore).length}
+                                        </div>
+                                    </div>
+
+                                    <FontAwesomeIcon
+                                        className={styles.icon}
+                                        icon={faTrash}
+                                        onClick={async (e) => {
+                                            e.stopPropagation();
+                                            if (!confirm(`Biztos törölni szeretné a(z) ${stat.opponentName} elleni jegyzőkönyvet?`)) return;
+                                            let stats: Stat[] = JSON.parse(localStorage.getItem('stats') ?? '[]');
+                                            stats = stats.filter(s => s.id !== stat.id);
+                                            localStorage.setItem('stats', JSON.stringify(stats));
+                                            stats = stats.filter(s => s.teamId === team.id);
+                                            setSavedStats(stats);
+                                            await deleteDoc(doc(db, 'users', state.userId, 'teams', team.id, 'stats', stat.id));
+                                        }}
+                                    />
+                                    <div
+                                        className={styles.opponentName}
+                                    >{stat.opponentName}</div>
+                                </div>
+                            ))}
+                        </div>
+                        <h2>Kanadai táblázat</h2>
+                        <table
+                            className={styles.table}
+                        >
+                            <thead>
+                                <tr>
+                                    <th>
+                                        #
+                                    </th>
+                                    <th>
+                                        Név
+                                    </th>
+                                    <th>
+                                        Assziszt
+                                    </th>
+                                    <th>
+                                        Pont
+                                    </th>
+                                    <th>
+                                        Összesen
+                                    </th>
+                                </tr>
+                            </thead>
+                            {
+                                <tbody>
+                                    {
+                                        tablePlayers.sort((a, b) =>
+                                            ((goalDic[b.number] ?? 0) + (assistDic[b.number] ?? 0)) -
+                                            ((goalDic[a.number] ?? 0) + (assistDic[a.number] ?? 0))
+                                        ).map((tp, index) => (
+                                            <tr key={index}>
+                                                <td>{tp.number}</td>
+                                                <td>{tp.name}</td>
+                                                <td>{assistDic[tp.number]}</td>
+                                                <td>{goalDic[tp.number]}</td>
+                                                <td>{assistDic[tp.number] + goalDic[tp.number]}</td>
+                                            </tr>
+                                        ))
+                                    }
+                                </tbody>
+                            }
+                            <tfoot>
+                                <tr><td className={styles.empty} /></tr>
+                                <tr>
+                                    <th colSpan={2}>Összesen</th>
+                                    <th>{Object.values(assistDic).reduce((prev, cur) => prev + cur, 0)}</th>
+                                    <th>{Object.values(goalDic).reduce((prev, cur) => prev + cur, 0)}</th>
+                                    <th>{Object.values(goalDic).concat(Object.values(assistDic)).reduce((prev, cur) => prev + cur, 0)}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </>
+                }
+            </div >
+        </>
     )
 }
