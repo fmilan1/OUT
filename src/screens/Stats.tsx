@@ -10,7 +10,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Player } from './Home';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpFromBracket, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
 import ShareModal from '../components/ShareModal';
 
 export interface Stat {
