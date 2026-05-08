@@ -186,7 +186,7 @@ export default function Home() {
                                 <FontAwesomeIcon
                                     icon={faUser}
                                 />
-                                {team.players.length}
+                                {team.players.concat(team.loanPlayers).length}
                             </div>
                             <FontAwesomeIcon
                                 className={`${styles.icon} ${styles.edit}`}
