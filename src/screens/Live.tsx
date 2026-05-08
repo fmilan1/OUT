@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 export default function Live() {
     const teamId = window.location.search.replace('?', '');
     const [teamName, setTeamName] = useState('');
+    const [tournament, setTournament] = useState('');
     const [stats, setStats] = useState<{
         id: string,
         opponentName: string,
@@ -21,6 +22,7 @@ export default function Live() {
             const querySnapshot = await getDocs(q);
             querySnapshot.docs.forEach(doc => {
                 setTeamName(doc.get('name'));
+                setTournament(doc.get('tournament'));
                 const statsRef = collection(doc.ref, 'stats');
                 const unsubscribe = onSnapshot(statsRef, snap => {
                     let tmp = snap.docs.map(s => ({
@@ -48,6 +50,7 @@ export default function Live() {
             className={styles.container}
         >
             <h1>{teamName}</h1>
+            <h2>{tournament}</h2>
             <br />
             {stats.sort((a, b) => b.modified - a.modified).map((s, index) => (
                 <div
