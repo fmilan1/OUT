@@ -28,8 +28,10 @@ export default function LiveStat() {
                         setTeamName(team.get('name'));
                         _setTeamId(team.id);
                         const players = collection(db, team.ref.path, 'players');
+                        const loanPlayers = collection(db, team.ref.path, 'loanPlayers');
                         const playersSnap = await getDocs(players);
-                        const playersData = playersSnap.docs.map(p => ({
+                        const loanPlayersSnap = await getDocs(loanPlayers);
+                        const playersData = playersSnap.docs.concat(loanPlayersSnap.docs).map(p => ({
                             number: parseInt(p.id),
                             name: p.get('name'),
                         }));
