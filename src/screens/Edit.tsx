@@ -14,7 +14,7 @@ export default function Edit() {
     const [team, setTeam] = useState<Team>(state.team);
     const [changed, setChanged] = useState(false);
     const [years, setYears] = useState<number[]>([]);
-    const [year, setYear] = useState(team.year ?? 2025);
+    const [year, setYear] = useState(team.year ?? (new Date()).getFullYear());
 
     useEffect(() => {
         let storageTeams: Team[] = JSON.parse(localStorage.getItem('teams') ?? '[]');
